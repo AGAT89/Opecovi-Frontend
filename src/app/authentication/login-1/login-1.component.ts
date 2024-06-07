@@ -1,5 +1,6 @@
 import { Component } from '@angular/core'
 import { UntypedFormBuilder, UntypedFormGroup,  Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 //import {  } from "module";
 
 
@@ -19,11 +20,11 @@ export class Login1Component {
         }
 
       if (this.loginForm.controls.userName.value == 'asd' && this.loginForm.controls.password.value == 'asd') {
-
+        this.router.navigate(['dashboard']);
       }
     }
 
-    constructor(private fb: UntypedFormBuilder) {
+    constructor(private fb: UntypedFormBuilder, private router: Router) {
     }
 
     ngOnInit(): void {

@@ -15,6 +15,10 @@ export const CommonLayout_ROUTES: Routes = [
       path: 'usuarios',
       loadChildren: () => import('../../modules/usuarios/usuarios.module').then(m => m.UsuariosModule),
     },
+    {
+      path: 'empleados',
+      loadChildren: () => import('../../modules/empleados/empleados.module').then(m => m.EmpleadosModule),
+    },
     // {
     //   path: 'roles',
     //   component: RolesComponent

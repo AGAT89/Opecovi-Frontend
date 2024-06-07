@@ -42,7 +42,7 @@ export const ROUTES: SideNavInterface[] = [
       submenu: []
     },
     {
-      path: '',
+      path: 'empleados',
       title: 'Empleados',
       iconType: 'nzIcon',
       iconTheme: 'outline',

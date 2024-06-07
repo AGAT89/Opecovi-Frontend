@@ -1,0 +1,302 @@
+<nz-card>
+  <div class="row m-b-30">
+      <div class="col-lg-8">
+          <div class="d-md-flex">
+              <div class="m-b-10 m-r-20">
+                  <nz-input-group [nzPrefix]="prefixTemplate">
+                      <input type="text" nz-input placeholder="Buscar..." [(ngModel)]="searchInput" (ngModelChange)="search()">
+                  </nz-input-group>
+                  <ng-template #prefixTemplate>
+                      <i nz-icon nzType="search" class="opacity-05"></i>
+                  </ng-template>
+              </div>
+              <!-- <div class="m-b-10 m-r-20 d-flex align-items-center">
+                  <nz-select style="min-width: 220px;" class="w-100" nzPlaceHolder="Rol" [(ngModel)]="selectedCategory" (ngModelChange)="categoryChange($event)">
+                      <nz-option nzLabel="Todos" nzValue="Todos"></nz-option>
+                      <nz-option nzLabel="Administrador" nzValue="Administrador"></nz-option>
+                      <nz-option nzLabel="Personal" nzValue="Personal"></nz-option>
+                      <nz-option nzLabel="Proveedor" nzValue="Proveedor"></nz-option>
+                  </nz-select>
+              </div>
+              <div class="m-b-10 m-r-20 d-flex align-items-center">
+                  <nz-select style="min-width: 220px;" class="w-100" nzPlaceHolder="Estado" [(ngModel)]="selectedStatus" (ngModelChange)="statusChange($event)">
+                      <nz-option nzLabel="Todos" nzValue="Todos"></nz-option>
+                      <nz-option nzLabel="Activos" nzValue="Activos"></nz-option>
+                      <nz-option nzLabel="Inactivos" nzValue="Inactivos"></nz-option>
+                  </nz-select>
+              </div> -->
+          </div>
+      </div>
+      <div class="col-lg-4 text-right">
+          <button nz-button nzType="primary"  (click)="showModal('nuevo')">
+              <i nz-icon nzType="plus-circle" theme="outline"></i>
+              <span>Nuevo Empleado</span>
+          </button>
+      </div>
+  </div>
+  <nz-table #productsListTable [nzData]="displayData">
+      <thead>
+          <tr>
+              <th *ngFor="let column of orderColumn" [nzSortFn]="column.compare">{{ column.title }}</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let item of productsListTable.data;  let i=index">
+              <td>{{i+1}}</td>
+              <td>{{item.person.nombres}}</td>
+              <td>{{item.person.apellido_paterno}} {{item.person.apellido_materno}}</td>
+              <!-- <td>
+                  <div class="d-flex align-items-center">
+                      <nz-avatar nzShape="square" [nzSize]="60" nzIcon="picture" [nzSrc]="item.avatar"></nz-avatar>
+                      <span class="m-l-10">{{item.nombres}}</span>
+                  </div>
+              </td> -->
+              <td>{{item.person.tipo_persona}}</td>
+              <!-- <td>${{item.price | number:'3.2-5'}}</td> -->
+              <!-- <td>
+                  {{item.quantity}}
+              </td> -->
+              <td>{{item.person.documento_identidad}}</td>
+              <!-- <td>
+                  <nz-badge *ngIf="item.status == 'in stock'" nzStatus="success"></nz-badge>
+                  <nz-badge *ngIf="item.status == 'out of stock'" nzStatus="error"></nz-badge>
+                  <span class="text-capitalize">{{item.status}}</span>
+              </td> -->
+              <td>{{item.area.nombre_area}} - {{item.position.nombre_cargo}}</td>
+              <td class="text-md-right" [width]="120" style="text-align: center!important;">
+                  <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Edit" (click)="showModal('editar', item)">
+                      <i nz-icon nzType="edit" theme="outline"></i>
+                  </a>
+                  <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Delete" (click)="showDeleteConfirm(item.id)">
+                      <i nz-icon nzType="delete" theme="outline"></i>
+                  </button>
+              </td>
+          </tr>
+      </tbody>
+  </nz-table>
+</nz-card>
+
+<nz-modal
+[(nzVisible)]="isVisible"
+nzTitle="{{ auxIdEmpleado == 0 ? 'Nuevo Empleado' : 'Editar Empleado'}}"
+(nzOnCancel)="handleCancel()"
+(nzOnOk)="handleOk()"
+[nzOkLoading]="isOkLoading"
+nzWidth="50%"
+nzCancelText="Cancelar"
+nzOkText="{{ auxIdEmpleado == 0 ? 'Guardar' : 'Actualizar'}}"
+>
+  <ng-container *nzModalContent>
+
+
+    <form nz-form [formGroup]="validateFormPerson"  style="max-width: 100%;">
+      <div nz-row>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+              <input type="text" nz-input placeholder="Número Documento" formControlName="documento_identidad"/>
+            </nz-input-group>
+            <ng-template #suffixIconButton>
+              <button nz-button nzType="primary" nzSearch (click)="buscarNumeroDocumento()"><span nz-icon nzType="search"></span></button>
+            </ng-template>
+          </nz-form-control>
+
+        </div>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Este campos es requerido!">
+            <input nz-input id="tipo_persona" formControlName="tipo_persona" placeholder="Tipo de persona" />
+          </nz-form-control>
+        </div>
+      </div>
+      <div nz-row>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <nz-select
+              id="area_id"
+              formControlName="area_id"
+              nzPlaceHolder="Area"
+              (ngModelChange)="selectArea()"
+            >
+              <nz-option [nzValue]="area.id" [nzLabel]="area.nombre_area" *ngFor="let area of areas"></nz-option>
+              <!-- <nz-option nzValue="female" nzLabel="female"></nz-option> -->
+            </nz-select>
+          </nz-form-control>
+        </div>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <nz-select
+              id="cargo_id"
+              formControlName="cargo_id"
+              nzPlaceHolder="Cargo"
+
+            >
+              <nz-option [nzValue]="cargo.id" [nzLabel]="cargo.nombre_cargo" *ngFor="let cargo of cargos"></nz-option>
+              <!-- <nz-option nzValue="female" nzLabel="female"></nz-option> -->
+            </nz-select>
+          </nz-form-control>
+        </div>
+      </div>
+      <div nz-row>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="tipo_documento" id="tipo_documento" placeholder="Tipo de documento"/>
+          </nz-form-control>
+        </div>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="apellido_paterno" id="apellido_paterno" placeholder="Apellido paterno"/>
+          </nz-form-control>
+        </div>
+      </div>
+      <div nz-row>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="apellido_materno" id="apellido_materno" placeholder="Apellido materno"/>
+          </nz-form-control>
+        </div>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="nombres" id="nombres" placeholder="Nombres"/>
+          </nz-form-control>
+        </div>
+      </div>
+      <div nz-row>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="ubigeo" id="ubigeo" placeholder="Ubigeo"/>
+          </nz-form-control>
+        </div>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="telefono" id="telefono" placeholder="Teléfono"/>
+          </nz-form-control>
+        </div>
+      </div>
+      <div nz-row>
+        <div nz-col nzSpan="24" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="direccion" id="direccion" placeholder="Direccion"/>
+          </nz-form-control>
+        </div>
+
+      </div>
+      <!-- <div nz-row>
+        <div nz-col nzSpan="12">col-12</div>
+        <div nz-col nzSpan="12">col-12</div>
+      </div> -->
+      <!-- <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="email">E-mail</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <input nz-input formControlName="email" id="email" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="password" nzRequired>Password</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input your password!">
+          <input
+            nz-input
+            type="password"
+            id="password"
+            formControlName="password"
+            (ngModelChange)="updateConfirmValidator()"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="checkPassword" nzRequired>Confirm Password</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" [nzErrorTip]="errorTpl">
+          <input nz-input type="password" formControlName="checkPassword" id="checkPassword" />
+          <ng-template #errorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Please confirm your password!</ng-container>
+            <ng-container *ngIf="control.hasError('confirm')">
+              Two passwords that you enter is inconsistent!
+            </ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label
+          [nzSm]="6"
+          [nzXs]="24"
+          nzFor="nickname"
+          nzRequired
+          nzTooltipTitle="What do you want other to call you"
+        >
+          <span>Nickname</span>
+        </nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input your nickname!">
+          <input nz-input id="nickname" formControlName="nickname" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="phoneNumber" nzRequired>Phone Number</nz-form-label>
+        <nz-form-control
+          [nzSm]="14"
+          [nzXs]="24"
+          [nzValidateStatus]="validateForm.controls['phoneNumber']"
+          nzErrorTip="Please input your phone number!"
+        >
+          <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate">
+            <ng-template #addOnBeforeTemplate>
+              <nz-select formControlName="phoneNumberPrefix" class="phone-select">
+                <nz-option nzLabel="+86" nzValue="+86"></nz-option>
+                <nz-option nzLabel="+87" nzValue="+87"></nz-option>
+              </nz-select>
+            </ng-template>
+            <input formControlName="phoneNumber" id="'phoneNumber'" nz-input />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="website" nzRequired>Website</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input website!">
+          <input nz-input id="website" formControlName="website" placeholder="website" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label
+          [nzSm]="6"
+          [nzXs]="24"
+          nzFor="captcha"
+          nzRequired
+          nzTooltipTitle="Please click 'Get captcha'"
+          [nzTooltipIcon]="captchaTooltipIcon"
+        >
+          Captcha
+        </nz-form-label>
+        <nz-form-control
+          [nzSm]="14"
+          [nzXs]="24"
+          nzErrorTip="Please input the captcha you got!"
+          nzExtra="We must make sure that your are a human."
+        >
+          <div nz-row [nzGutter]="8">
+            <div nz-col [nzSpan]="12">
+              <input nz-input formControlName="captcha" id="captcha" />
+            </div>
+            <div nz-col [nzSpan]="12">
+              <button nz-button (click)="getCaptcha($event)">Get captcha</button>
+            </div>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item nz-row class="register-area">
+        <nz-form-control [nzSpan]="14" [nzOffset]="6">
+          <label nz-checkbox formControlName="agree">
+            <span>
+              I have read the
+              <a>agreement</a>
+            </span>
+          </label>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item nz-row class="register-area">
+        <nz-form-control [nzSpan]="14" [nzOffset]="6">
+          <button nz-button nzType="primary">Register</button>
+        </nz-form-control>
+      </nz-form-item> -->
+    </form>
+  </ng-container>
+
+
+</nz-modal>
