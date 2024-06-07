@@ -38,7 +38,7 @@ export const ROUTES: SideNavInterface[] = [
       title: 'Personas',
       iconType: 'nzIcon',
       iconTheme: 'outline',
-      icon: 'dollar',
+      icon: 'user',
       submenu: []
     },
     {
@@ -46,7 +46,7 @@ export const ROUTES: SideNavInterface[] = [
       title: 'Empleados',
       iconType: 'nzIcon',
       iconTheme: 'outline',
-      icon: 'dollar',
+      icon: 'user',
       submenu: []
     },
 
