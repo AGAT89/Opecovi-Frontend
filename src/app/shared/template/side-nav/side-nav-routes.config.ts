@@ -1,40 +1,56 @@
 import { SideNavInterface } from '../../interfaces/side-nav.type';
 export const ROUTES: SideNavInterface[] = [
+    // {
+    //     path: '',
+    //     title: 'Dashboard',
+    //     iconType: 'nzIcon',
+    //     iconTheme: 'outline',
+    //     icon: 'dashboard',
+    //     submenu: []
+    // },
+    // {
+    //   path: '',
+    //   title: 'Autenticación',
+    //   iconType: 'nzIcon',
+    //   iconTheme: 'outline',
+    //   icon: 'lock',
+    //   submenu: [
+    //       {
+    //           path: 'roles',
+    //           title: 'Roles y Permisos',
+    //           iconType: '',
+    //           icon: '',
+    //           iconTheme: '',
+    //           submenu: []
+    //       },
+    //       {
+    //         path: 'usuarios',
+    //         title: 'Usuarios',
+    //         iconType: '',
+    //         icon: '',
+    //         iconTheme: '',
+    //         submenu: []
+    //     }
+    //   ]
+    // },
     {
-        path: '',
-        title: 'Dashboard',
-        iconType: 'nzIcon',
-        iconTheme: 'outline',
-        icon: 'dashboard',
-        submenu: []
-    },
-    {
-      path: '',
-      title: 'Autenticación',
+      path: 'roles',
+      title: 'Roles y Permisos',
       iconType: 'nzIcon',
-      iconTheme: 'outline',
       icon: 'lock',
-      submenu: [
-          {
-              path: 'roles',
-              title: 'Roles y Permisos',
-              iconType: '',
-              icon: '',
-              iconTheme: '',
-              submenu: []
-          },
-          {
-            path: 'usuarios',
-            title: 'Usuarios',
-            iconType: '',
-            icon: '',
-            iconTheme: '',
-            submenu: []
-        }
-      ]
+      iconTheme: 'outline',
+      submenu: []
     },
     {
-      path: 'venta',
+      path: 'usuarios',
+      title: 'Usuarios',
+      iconType: 'nzIcon',
+      icon: 'usergroup-add',
+      iconTheme: 'outline',
+      submenu: []
+    },
+    {
+      path: 'personas',
       title: 'Personas',
       iconType: 'nzIcon',
       iconTheme: 'outline',
@@ -44,6 +60,14 @@ export const ROUTES: SideNavInterface[] = [
     {
       path: 'empleados',
       title: 'Empleados',
+      iconType: 'nzIcon',
+      iconTheme: 'outline',
+      icon: 'user',
+      submenu: []
+    },
+    {
+      path: 'proveedores',
+      title: 'Proveedores',
       iconType: 'nzIcon',
       iconTheme: 'outline',
       icon: 'user',

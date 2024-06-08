@@ -15,7 +15,7 @@
       <div class="col-lg-4 text-right">
           <button nz-button nzType="primary"  (click)="showModal('nuevo')">
               <i nz-icon nzType="plus-circle" theme="outline"></i>
-              <span>Nuevo Empleado</span>
+              <span>Nuevo Persona</span>
           </button>
       </div>
   </div>
@@ -28,21 +28,19 @@
       <tbody>
           <tr *ngFor="let item of productsListTable.data;  let i=index">
               <td>{{i+1}}</td>
-              <td>{{item.persona.nombres}}</td>
-              <td>{{item.persona.apellido_paterno}} {{item.persona.apellido_materno}}</td>
+              <td>{{item.nombres}}</td>
+              <td>{{item.apellido_paterno}} {{item.apellido_materno}}</td>
 
-              <td>{{item.persona.tipo_persona}}</td>
+              <td>{{item.tipo_persona}}</td>
 
-              <td>{{item.persona.documento_identidad}}</td>
+              <td>{{item.documento_identidad}}</td>
 
-              <td>{{item.persona.telefono}}</td>
-              <td>{{item.area.nomb_area}}</td>
-              <td>{{item.cargo.nomb_cargo}}</td>
+              <td>{{item.telefono}}</td>
               <td class="text-md-right" [width]="120" style="text-align: center!important;">
                   <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Editar" (click)="showModal('editar', item)">
                       <i nz-icon nzType="edit" theme="outline"></i>
                   </a>
-                  <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Eliminar" (click)="showDeleteConfirm(item.id_empleado)">
+                  <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Eliminar" (click)="showDeleteConfirm(item.id_persona)">
                       <i nz-icon nzType="delete" theme="outline"></i>
                   </button>
               </td>
@@ -53,15 +51,16 @@
 
 <nz-modal
 [(nzVisible)]="isVisible"
-nzTitle="{{ auxIdEmpleado == 0 ? 'Nuevo Empleado' : 'Editar Empleado'}}"
+nzTitle="{{ auxIdPersona == 0 ? 'Nueva Persona' : 'Editar Persona'}}"
 (nzOnCancel)="handleCancel()"
 (nzOnOk)="handleOk()"
 [nzOkLoading]="isOkLoading"
 nzWidth="50%"
 nzCancelText="Cancelar"
-nzOkText="{{ auxIdEmpleado == 0 ? 'Guardar' : 'Actualizar'}}"
+nzOkText="{{ auxIdPersona == 0 ? 'Guardar' : 'Actualizar'}}"
 >
   <ng-container *nzModalContent>
+
 
     <form nz-form [formGroup]="validateFormPerson"  style="max-width: 100%;">
       <div nz-row>
@@ -128,38 +127,6 @@ nzOkText="{{ auxIdEmpleado == 0 ? 'Guardar' : 'Actualizar'}}"
 
       </div>
     </form>
-
-    <form nz-form [formGroup]="validateFormEmpleado"  style="max-width: 100%;">
-
-      <div nz-row>
-        <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <nz-select
-              id="id_area"
-              formControlName="id_area"
-              nzPlaceHolder="Area"
-              (ngModelChange)="listarCargos()"
-            >
-              <nz-option [nzValue]="area.id_area" [nzLabel]="area.nomb_area" *ngFor="let area of areas"></nz-option>
-              <!-- <nz-option nzValue="female" nzLabel="female"></nz-option> -->
-            </nz-select>
-          </nz-form-control>
-        </div>
-        <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <nz-select
-              id="id_cargo"
-              formControlName="id_cargo"
-              nzPlaceHolder="Cargo"
-
-            >
-              <nz-option [nzValue]="cargo.id_cargo" [nzLabel]="cargo.nomb_cargo" *ngFor="let cargo of cargos"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </div>
-      </div>
-    </form>
-
   </ng-container>
 
 

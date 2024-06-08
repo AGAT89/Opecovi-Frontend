@@ -1,17 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { TableService } from 'src/app/shared/services/table.service';
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  NonNullableFormBuilder,
-  ValidatorFn,
-  Validators
-} from '@angular/forms';
-
-import { NzFormTooltipIcon } from 'ng-zorro-antd/form';
-import { ApiService } from 'src/app/shared/services/api.service';
+import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { ApiService } from 'src/app/shared/services/api.service';
+import { TableService } from 'src/app/shared/services/table.service';
 
 interface DataItem {
   id: number;
@@ -20,16 +11,15 @@ interface DataItem {
   tipo_persona: string;
   documento_identidad: string;
   telefono:  string;
-  area:  string;
-  cargo:  string;
+  giro_negocio:  string;
 }
 
 @Component({
-  selector: 'app-empleados',
-  templateUrl: './empleados.component.html',
-  styleUrls: ['./empleados.component.css']
+  selector: 'app-proveedores',
+  templateUrl: './proveedores.component.html',
+  styleUrls: ['./proveedores.component.css']
 })
-export class EmpleadosComponent implements OnInit {
+export class ProveedoresComponent implements OnInit {
 
   selectedCategory: string;
   selectedStatus: string;
@@ -62,12 +52,8 @@ export class EmpleadosComponent implements OnInit {
         compare: (a: DataItem, b: DataItem) => a.telefono.localeCompare(b.telefono)
     },
     {
-        title: 'Area',
-        compare: (a: DataItem, b: DataItem) => a.area.localeCompare(b.area)
-    },
-    {
-        title: 'Cargo',
-        compare: (a: DataItem, b: DataItem) => a.cargo.localeCompare(b.cargo)
+        title: 'Giro de negocio',
+        compare: (a: DataItem, b: DataItem) => a.giro_negocio.localeCompare(b.giro_negocio)
     },
     {
         title: 'Acciones'
@@ -78,18 +64,6 @@ export class EmpleadosComponent implements OnInit {
 
   isVisible = false;
   isOkLoading = false;
-
-  validateForm: FormGroup<{
-    email: FormControl<string>;
-    password: FormControl<string>;
-    checkPassword: FormControl<string>;
-    nickname: FormControl<string>;
-    phoneNumberPrefix: FormControl<'+86' | '+87'>;
-    phoneNumber: FormControl<string>;
-    website: FormControl<string>;
-    captcha: FormControl<string>;
-    agree: FormControl<boolean>;
-  }>;
 
   validateFormPerson: FormGroup<{
     id_empresa: FormControl<string>;
@@ -106,17 +80,14 @@ export class EmpleadosComponent implements OnInit {
     es_proveedor: FormControl<string>;
   }>;
 
-  validateFormEmpleado: FormGroup<{
+  validateFormProveedor: FormGroup<{
     id_empresa: FormControl<string>;
     id_persona: FormControl<string>;
-    id_area: FormControl<string>;
-    id_cargo: FormControl<string>;
+    giro_negocio: FormControl<string>;
+
   }>;
 
-  areas: any[] = [];
-  cargos: any[] =[];
-
-  auxIdEmpleado : number = 0;
+  auxIdProveedor : number = 0;
 
   constructor(private tableSvc : TableService, private fb: NonNullableFormBuilder, private api: ApiService, private modal: NzModalService) {
     this.displayData = this.productsList;
@@ -136,11 +107,10 @@ export class EmpleadosComponent implements OnInit {
       es_proveedor: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
     });
 
-    this.validateFormEmpleado = this.fb.group({
+    this.validateFormProveedor = this.fb.group({
       id_empresa: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       id_persona: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      id_area: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      id_cargo: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      giro_negocio: ['', [Validators.required]],
     });
 
     this.validateFormPerson.get('tipo_persona')?.disable();
@@ -154,8 +124,7 @@ export class EmpleadosComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.listarEmpleados();
-    this.listarAreas();
+    this.listarProveedores();
   }
 
   search(): void {
@@ -165,31 +134,30 @@ export class EmpleadosComponent implements OnInit {
 
 
 
-  showModal(tipo: string, empleado? : any): void {
+  showModal(tipo: string, proveedor? : any): void {
     if (tipo == 'nuevo') {
       this.isVisible = true;
-      this.auxIdEmpleado = 0;
+      this.auxIdProveedor = 0;
     } else {
 
-      this.auxIdEmpleado = empleado.id_empleado;
+      this.auxIdProveedor = proveedor.id_proveedor;
 
-      this.validateFormPerson.controls.id_empresa.setValue(empleado.persona.id_empresa);
-      this.validateFormPerson.controls.tipo_persona.setValue(empleado.persona.tipo_persona);
-      this.validateFormPerson.controls.tipo_documento.setValue(empleado.persona.tipo_documento);
-      this.validateFormPerson.controls.documento_identidad.setValue(empleado.persona.documento_identidad);
-      this.validateFormPerson.controls.apellido_paterno.setValue(empleado.persona.apellido_paterno);
-      this.validateFormPerson.controls.apellido_materno.setValue(empleado.persona.apellido_materno);
-      this.validateFormPerson.controls.nombres.setValue(empleado.persona.nombres);
-      this.validateFormPerson.controls.direccion.setValue(empleado.persona.direccion);
-      this.validateFormPerson.controls.ubigeo.setValue(empleado.persona.ubigeo);
-      this.validateFormPerson.controls.telefono.setValue(empleado.persona.telefono);
-      this.validateFormPerson.controls.es_empleado.setValue(empleado.persona.es_empleado);
-      this.validateFormPerson.controls.es_proveedor.setValue(empleado.persona.es_proveedor);
+      this.validateFormPerson.controls.id_empresa.setValue(proveedor.persona.id_empresa);
+      this.validateFormPerson.controls.tipo_persona.setValue(proveedor.persona.tipo_persona);
+      this.validateFormPerson.controls.tipo_documento.setValue(proveedor.persona.tipo_documento);
+      this.validateFormPerson.controls.documento_identidad.setValue(proveedor.persona.documento_identidad);
+      this.validateFormPerson.controls.apellido_paterno.setValue(proveedor.persona.apellido_paterno);
+      this.validateFormPerson.controls.apellido_materno.setValue(proveedor.persona.apellido_materno);
+      this.validateFormPerson.controls.nombres.setValue(proveedor.persona.nombres);
+      this.validateFormPerson.controls.direccion.setValue(proveedor.persona.direccion);
+      this.validateFormPerson.controls.ubigeo.setValue(proveedor.persona.ubigeo);
+      this.validateFormPerson.controls.telefono.setValue(proveedor.persona.telefono);
+      this.validateFormPerson.controls.es_empleado.setValue(proveedor.persona.es_empleado);
+      this.validateFormPerson.controls.es_proveedor.setValue(proveedor.persona.es_proveedor);
 
-      this.validateFormEmpleado.controls.id_empresa.setValue(empleado.id_empresa);
-      this.validateFormEmpleado.controls.id_persona.setValue(empleado.id_persona);
-      this.validateFormEmpleado.controls.id_area.setValue(empleado.id_area);
-      this.validateFormEmpleado.controls.id_cargo.setValue(empleado.id_cargo);
+      this.validateFormProveedor.controls.id_empresa.setValue(proveedor.id_empresa);
+      this.validateFormProveedor.controls.id_persona.setValue(proveedor.id_persona);
+      this.validateFormProveedor.controls.giro_negocio.setValue(proveedor.giro_negocio);
 
       this.isVisible = true;
     }
@@ -197,11 +165,11 @@ export class EmpleadosComponent implements OnInit {
 
   handleOk(): void {
 
-    if (this.auxIdEmpleado == 0) {
+    if (this.auxIdProveedor == 0) {
       this.isOkLoading = true;
-      this.validateFormEmpleado.controls.id_empresa.setValue('1');
+      this.validateFormProveedor.controls.id_empresa.setValue('1');
 
-      this.api.consulta('empleados', 'post', this.validateFormEmpleado.value).subscribe((resp) => {
+      this.api.consulta('proveedores', 'post', this.validateFormProveedor.value).subscribe((resp) => {
 
 
         this.isVisible = false;
@@ -213,7 +181,7 @@ export class EmpleadosComponent implements OnInit {
     } else {
       this.isOkLoading = true;
 
-      this.api.consulta('empleados/'+this.auxIdEmpleado, 'put', this.validateFormEmpleado.value).subscribe((resp) => {
+      this.api.consulta('proveedores/'+this.auxIdProveedor, 'put', this.validateFormProveedor.value).subscribe((resp) => {
 
          this.isVisible = false;
           this.isOkLoading = false;
@@ -246,49 +214,38 @@ export class EmpleadosComponent implements OnInit {
         this.validateFormPerson.controls.es_empleado.setValue(resp.data.es_empleado);
         this.validateFormPerson.controls.es_proveedor.setValue(resp.data.es_proveedor);
 
-        this.validateFormEmpleado.controls.id_persona.setValue(resp.data.id_persona);
+        this.validateFormProveedor.controls.id_persona.setValue(resp.data.id_persona);
     });
 
   }
 
-  listarEmpleados(){
-    this.api.consulta('empleados', 'get').subscribe((resp) => {
+  listarProveedores(){
+    this.api.consulta('proveedores', 'get').subscribe((resp) => {
 
       this.displayData = resp.data;
       this.productsList =  resp.data;
     });
   }
 
-  listarAreas(){
-    this.api.consulta('areas', 'get').subscribe((resp) => {
 
-      this.areas = resp.data;
-    });
-  }
-
-  listarCargos(){
-    this.api.consulta('busca-cargo/'+this.validateFormEmpleado.controls.id_area.value, 'get').subscribe((resp) => {
-
-      this.cargos = resp.data;
-    });
-  }
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah este empleado?',
+      nzTitle: 'Desea eliminar ah este proveedor?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,
-      nzOnOk: () => this.eliminarEmpleado(id),
+      nzOnOk: () => this.eliminarProveedores(id),
       nzCancelText: 'No',
       nzOnCancel: () => console.log('Cancel')
     });
   }
 
-  eliminarEmpleado(id: any) {
-    this.api.consulta('empleados/'+id, 'delete').subscribe((resp) => {
+  eliminarProveedores(id: any) {
+    this.api.consulta('proveedores/'+id, 'delete').subscribe((resp) => {
 
       this.ngOnInit();
     });
   }
+
 }

@@ -20,7 +20,7 @@ export class Login1Component {
         }
 
       if (this.loginForm.controls.userName.value == 'asd' && this.loginForm.controls.password.value == 'asd') {
-        this.router.navigate(['dashboard']);
+        this.router.navigate(['roles']);
       }
     }
 
