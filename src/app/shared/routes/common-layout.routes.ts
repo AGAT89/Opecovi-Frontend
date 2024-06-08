@@ -27,18 +27,14 @@ export const CommonLayout_ROUTES: Routes = [
       path: 'proveedores',
       loadChildren: () => import('../../modules/proveedores/proveedores.module').then(m => m.ProveedoresModule),
     },
-    // {
-    //   path: 'roles',
-    //   component: RolesComponent
-    //   //loadChildren: () => import('../../dashboard/dashboard.module').then(m => m.DashboardModule),
-    // },
-    // {
-    //   path: 'usuarios',
-    //   component: UsuariosComponent
-    //   //loadChildren: () => import('../../dashboard/dashboard.module').then(m => m.DashboardModule),
-    // },
     {
-        path: 'venta',
-        loadChildren: () => import('../../venta/venta.module').then(m => m.VentaModule),
-    }
+      path: 'areas',
+      loadChildren: () => import('../../modules/areas/areas.module').then(m => m.AreasModule),
+    },
+    {
+      path: 'cargos',
+      loadChildren: () => import('../../modules/cargos/cargos.module').then(m => m.CargosModule),
+    },
+
+
 ];

@@ -50,6 +50,22 @@ export const ROUTES: SideNavInterface[] = [
       submenu: []
     },
     {
+      path: 'areas',
+      title: 'Areas',
+      iconType: 'nzIcon',
+      iconTheme: 'outline',
+      icon: 'user',
+      submenu: []
+    },
+    {
+      path: 'cargos',
+      title: 'Cargos',
+      iconType: 'nzIcon',
+      iconTheme: 'outline',
+      icon: 'user',
+      submenu: []
+    },
+    {
       path: 'personas',
       title: 'Personas',
       iconType: 'nzIcon',
