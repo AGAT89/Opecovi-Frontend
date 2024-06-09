@@ -105,8 +105,6 @@ export class PersonasComponent implements OnInit {
     this.displayData = this.tableSvc.search(this.searchInput, data )
   }
 
-
-
   showModal(tipo: string, persona? : any): void {
     if (tipo == 'nuevo') {
       this.isVisible = true;

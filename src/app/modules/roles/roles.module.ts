@@ -17,6 +17,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 const antdModule = [
@@ -39,6 +40,8 @@ const antdModule = [
     SharedModule,
     CommonModule,
     RolesRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
     ...antdModule
   ],
   providers: [

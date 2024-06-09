@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { ApiService } from 'src/app/shared/services/api.service';
 import { TableService } from 'src/app/shared/services/table.service';
 
 interface DataItem {
   id: number;
-  name: string;
-  category: string;
-  price: number;
-  quantity: number;
-  status:  string;
+  nomb_rol: string;
+  es_activo: string;
 }
 
 @Component({
@@ -29,110 +29,49 @@ export class RolesComponent implements OnInit {
     },
     {
         title: 'Rol',
-        compare: (a: DataItem, b: DataItem) => a.name.localeCompare(b.name)
+        compare: (a: DataItem, b: DataItem) => a.nomb_rol.localeCompare(b.nomb_rol)
     },
     {
         title: 'Estado',
-        compare: (a: DataItem, b: DataItem) => a.category.localeCompare(b.category)
+        compare: (a: DataItem, b: DataItem) => a.es_activo.localeCompare(b.es_activo)
     },
-    // {
-    //     title: 'Price',
-    //     compare: (a: DataItem, b: DataItem) => a.price - b.price,
-    // },
-    // {
-    //     title: 'Stock',
-    //     compare: (a: DataItem, b: DataItem) => a.quantity - b.quantity,
-    // },
-    // {
-    //     title: 'Status',
-    //     compare: (a: DataItem, b: DataItem) => a.name.localeCompare(b.name)
-    // },
     {
         title: 'Acciones'
     }
   ]
 
-  productsList = [
-    {
-        id: 31,
-        name: 'Gray Sofa',
-        avatar: 'assets/images/others/thumb-9.jpg',
-        category: 'Home Decoration',
-        price: 912,
-        quantity: 23,
-        status: 'in stock',
-        checked : false
-    },
-    {
-        id: 32,
-        name: 'Beat Headphone',
-        avatar: 'assets/images/others/thumb-10.jpg',
-        category: 'Eletronic',
-        price: 137,
-        quantity: 56,
-        status: 'in stock',
-        checked : false
-    },
-    {
-        id: 33,
-        name: 'Wooden Rhino',
-        avatar: 'assets/images/others/thumb-11.jpg',
-        category: 'Home Decoration',
-        price: 912,
-        quantity: 12,
-        status: 'in stock',
-        checked : false
-    },
-    {
-        id: 34,
-        name: 'Red Chair',
-        avatar: 'assets/images/others/thumb-12.jpg',
-        category: 'Home Decoration',
-        price: 128,
-        quantity: 0,
-        status: 'out of stock',
-        checked : false
-    },
-    {
-        id: 35,
-        name: 'Wristband',
-        avatar: 'assets/images/others/thumb-13.jpg',
-        category: 'Eletronic',
-        price: 776,
-        quantity: 0,
-        status: 'out of stock',
-        checked : false
-    },
-    {
-        id: 36,
-        name: 'Charging Cable',
-        avatar: 'assets/images/others/thumb-14.jpg',
-        category: 'Eletronic',
-        price: 119,
-        quantity: 37,
-        status: 'in stock',
-        checked : false
-    },
-    {
-        id: 37,
-        name: 'Three Legs',
-        avatar: 'assets/images/others/thumb-15.jpg',
-        category: 'Home Decoration',
-        price: 199,
-        quantity: 17,
-        status: 'in stock',
-        checked : false
-    },
-  ]
+  productsList = []
 
   isVisible = false;
   isOkLoading = false;
 
-  constructor(private tableSvc : TableService) {
-    this.displayData = this.productsList
+  validateFormRol: FormGroup<{
+    id_empresa: FormControl<string>;
+    nomb_rol: FormControl<string>;
+  }>;
+
+  auxIdRol : number = 0;
+
+  modulos: any[] = [];
+  permisos: any[] = [];
+  permisosActuales: any[] = [];
+
+  listOfOption: string[] = [];
+  listOfSelectedValue = ['a10', 'c12'];
+
+  constructor(private tableSvc : TableService, private fb: NonNullableFormBuilder, private api: ApiService, private modal: NzModalService) {
+    this.displayData = this.productsList;
+
+    this.validateFormRol = this.fb.group({
+      id_empresa: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      nomb_rol: ['', [Validators.required]],
+    });
   }
 
   ngOnInit(): void {
+    this.listarRoles();
+    this.listarModulos();
+
   }
 
   search(): void {
@@ -140,30 +79,122 @@ export class RolesComponent implements OnInit {
     this.displayData = this.tableSvc.search(this.searchInput, data )
   }
 
-  categoryChange(value: string): void {
-      const data = this.productsList
-      value !== 'All'? this.displayData = data.filter(elm => elm.category === value) : this.displayData = data
-  }
+  showModal(tipo: string, rol? : any): void {
+    if (tipo == 'nuevo') {
+      this.isVisible = true;
+      this.auxIdRol = 0;
+    } else {
+      console.log(rol);
+      this.auxIdRol = rol.id_rol;
+      this.validateFormRol.controls.id_empresa.setValue(rol.id_empresa);
+      this.validateFormRol.controls.nomb_rol.setValue(rol.nomb_rol);
 
-  statusChange(value: string): void {
-      const data = this.productsList
-      value !== 'All'? this.displayData = data.filter(elm => elm.status === value) : this.displayData = data
-  }
+      rol.permisos.forEach(element => {
+        if (element.es_activo == 1) {
+          this.permisos.push(element.id_modulo);
+          this.permisosActuales.push(element.id_permisos);
+        }
+      });
 
-
-  showModal(): void {
-    this.isVisible = true;
+      this.isVisible = true;
+    }
   }
 
   handleOk(): void {
-    this.isOkLoading = true;
-    setTimeout(() => {
-      this.isVisible = false;
-      this.isOkLoading = false;
-    }, 3000);
+    if (this.auxIdRol == 0) {
+      this.isOkLoading = true;
+      this.validateFormRol.controls.id_empresa.setValue('1');
+
+      this.api.consulta('roles', 'post', this.validateFormRol.value).subscribe((resp) => {
+
+        this.permisos.forEach(element => {
+          let permiso = {
+            id_empresa : 1,
+            id_rol: resp.data.id_rol,
+            id_modulo : element
+          };
+          this.api.consulta('permisos','post', permiso).subscribe((res) => {
+            console.log(res);
+          })
+        });
+
+        this.isVisible = false;
+        this.isOkLoading = false;
+
+        this.ngOnInit();
+
+      });
+    } else {
+      this.isOkLoading = true;
+
+      this.api.consulta('roles/'+this.auxIdRol, 'put', this.validateFormRol.value).subscribe((resp) => {
+
+        this.permisosActuales.forEach(element => {
+          this.api.consulta('permisos/'+element,'delete').subscribe((res)=>{
+            console.log(res);
+          })
+        });
+
+        this.permisos.forEach(element => {
+          let permiso = {
+            id_empresa : 1,
+            id_rol: resp.data.id_rol,
+            id_modulo : element
+          };
+          this.api.consulta('permisos','post', permiso).subscribe((res) => {
+            console.log(res);
+          })
+        });
+
+         this.isVisible = false;
+          this.isOkLoading = false;
+
+          this.ngOnInit();
+
+
+      });
+    }
+
+
   }
 
   handleCancel(): void {
     this.isVisible = false;
+  }
+
+
+
+  listarRoles(){
+    this.api.consulta('roles', 'get').subscribe((resp) => {
+
+      this.displayData = resp.data;
+      this.productsList =  resp.data;
+    });
+  }
+
+  listarModulos(){
+    this.api.consulta('modulos', 'get').subscribe((resp) => {
+
+      this.modulos = resp.data;
+    });
+  }
+
+  showDeleteConfirm(id: any): void {
+    this.modal.confirm({
+      nzTitle: 'Desea eliminar ah este rol?',
+      nzOkText: 'Si',
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzOnOk: () => this.eliminarRol(id),
+      nzCancelText: 'No',
+      nzOnCancel: () => console.log('Cancel')
+    });
+  }
+
+  eliminarRol(id: any) {
+    this.api.consulta('arroleseas/'+id, 'delete').subscribe((resp) => {
+
+      this.ngOnInit();
+    });
   }
 }
