@@ -10,28 +10,13 @@
                       <i nz-icon nzType="search" class="opacity-05"></i>
                   </ng-template>
               </div>
-              <div class="m-b-10 m-r-20 d-flex align-items-center">
-                  <nz-select style="min-width: 220px;" class="w-100" nzPlaceHolder="Rol" [(ngModel)]="selectedCategory" (ngModelChange)="categoryChange($event)">
-                      <nz-option nzLabel="Todos" nzValue="Todos"></nz-option>
-                      <nz-option nzLabel="Administrador" nzValue="Administrador"></nz-option>
-                      <nz-option nzLabel="Personal" nzValue="Personal"></nz-option>
-                      <nz-option nzLabel="Proveedor" nzValue="Proveedor"></nz-option>
-                  </nz-select>
-              </div>
-              <div class="m-b-10 m-r-20 d-flex align-items-center">
-                  <nz-select style="min-width: 220px;" class="w-100" nzPlaceHolder="Estado" [(ngModel)]="selectedStatus" (ngModelChange)="statusChange($event)">
-                      <nz-option nzLabel="Todos" nzValue="Todos"></nz-option>
-                      <nz-option nzLabel="Activos" nzValue="Activos"></nz-option>
-                      <nz-option nzLabel="Inactivos" nzValue="Inactivos"></nz-option>
-                  </nz-select>
-              </div>
           </div>
       </div>
       <div class="col-lg-4 text-right">
-          <a nz-button nzType="primary">
+          <button nz-button nzType="primary"  (click)="showModal('nuevo')">
               <i nz-icon nzType="plus-circle" theme="outline"></i>
-              <span>Add Product</span>
-          </a>
+              <span>Nuevo Usuario</span>
+          </button>
       </div>
   </div>
   <nz-table #productsListTable [nzData]="displayData">
@@ -42,28 +27,18 @@
       </thead>
       <tbody>
           <tr *ngFor="let item of productsListTable.data;  let i=index">
-              <td>#{{item.id}}</td>
-              <td>
-                  <div class="d-flex align-items-center">
-                      <nz-avatar nzShape="square" [nzSize]="60" nzIcon="picture" [nzSrc]="item.avatar"></nz-avatar>
-                      <span class="m-l-10">{{item.name}}</span>
-                  </div>
-              </td>
-              <td>{{item.category}}</td>
-              <td>${{item.price | number:'3.2-5'}}</td>
-              <td>
-                  {{item.quantity}}
-              </td>
-              <td>
-                  <nz-badge *ngIf="item.status == 'in stock'" nzStatus="success"></nz-badge>
-                  <nz-badge *ngIf="item.status == 'out of stock'" nzStatus="error"></nz-badge>
-                  <span class="text-capitalize">{{item.status}}</span>
-              </td>
-              <td class="text-md-right">
-                  <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Edit" >
+              <td>{{i+1}}</td>
+              <td>{{item.empleado.persona.nombres}}</td>
+              <td>{{item.empleado.persona.apellido_paterno}} {{item.empleado.persona.apellido_materno}}</td>
+
+              <td>{{item.usuario}}</td>
+
+
+              <td class="text-md-right" [width]="120" style="text-align: center!important;">
+                  <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Editar" (click)="showModal('editar', item)">
                       <i nz-icon nzType="edit" theme="outline"></i>
                   </a>
-                  <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Delete">
+                  <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Eliminar" (click)="showDeleteConfirm(item.id_usuario)">
                       <i nz-icon nzType="delete" theme="outline"></i>
                   </button>
               </td>
@@ -71,3 +46,65 @@
       </tbody>
   </nz-table>
 </nz-card>
+
+<nz-modal
+[(nzVisible)]="isVisible"
+nzTitle="{{ auxIdUsuario == 0 ? 'Nuevo Usuario' : 'Editar Usuario'}}"
+(nzOnCancel)="handleCancel()"
+(nzOnOk)="handleOk()"
+[nzOkLoading]="isOkLoading"
+nzWidth="50%"
+nzCancelText="Cancelar"
+nzOkText="{{ auxIdUsuario == 0 ? 'Guardar' : 'Actualizar'}}"
+>
+  <ng-container *nzModalContent>
+
+
+    <form nz-form [formGroup]="validateFormUsuario"  style="max-width: 100%;">
+
+
+      <div nz-row>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <nz-select
+              id="id_empleado"
+              formControlName="id_empleado"
+              nzPlaceHolder="Empleados"
+
+            >
+              <nz-option [nzValue]="empleado.id_empleado" [nzLabel]="empleado.persona.nombres+' '+empleado.persona.apellido_paterno+' '+empleado.persona.apellido_materno" *ngFor="let empleado of empleados"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </div>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <nz-select
+              id="id_rol"
+              formControlName="id_rol"
+              nzPlaceHolder="Rol"
+
+            >
+              <nz-option [nzValue]="rol.id_rol" [nzLabel]="rol.nomb_rol" *ngFor="let rol of roles"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </div>
+      </div>
+      <div nz-row>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="usuario" id="usuario" placeholder="Usuario"/>
+          </nz-form-control>
+        </div>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input type="password" formControlName="contrasena" id="contrasena" placeholder="Contraseña"/>
+          </nz-form-control>
+        </div>
+
+      </div>
+
+    </form>
+  </ng-container>
+
+
+</nz-modal>

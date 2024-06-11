@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { ApiService } from 'src/app/shared/services/api.service';
 import { TableService } from 'src/app/shared/services/table.service';
 
 interface DataItem {
   id: number;
-  name: string;
-  category: string;
-  price: number;
-  quantity: number;
-  status:  string;
+  nombres: string;
+  apellidos: string;
+  usuarios: string;
 }
 
 @Component({
@@ -24,112 +25,60 @@ export class UsuariosComponent implements OnInit {
 
   orderColumn = [
     {
-        title: 'ID',
+        title: '#',
         compare: (a: DataItem, b: DataItem) => a.id - b.id,
     },
     {
-        title: 'Product',
-        compare: (a: DataItem, b: DataItem) => a.name.localeCompare(b.name)
+        title: 'Nombres',
+        compare: (a: DataItem, b: DataItem) => a.nombres.localeCompare(b.nombres)
     },
     {
-        title: 'Category',
-        compare: (a: DataItem, b: DataItem) => a.category.localeCompare(b.category)
+        title: 'Apellidos',
+        compare: (a: DataItem, b: DataItem) => a.apellidos.localeCompare(b.apellidos)
     },
     {
-        title: 'Price',
-        compare: (a: DataItem, b: DataItem) => a.price - b.price,
+        title: 'Usuarios',
+        compare: (a: DataItem, b: DataItem) => a.usuarios.localeCompare(b.usuarios)
     },
     {
-        title: 'Stock',
-        compare: (a: DataItem, b: DataItem) => a.quantity - b.quantity,
-    },
-    {
-        title: 'Status',
-        compare: (a: DataItem, b: DataItem) => a.name.localeCompare(b.name)
-    },
-    {
-        title: ''
+        title: 'Acciones'
     }
   ]
 
-  productsList = [
-    {
-        id: 31,
-        name: 'Gray Sofa',
-        avatar: 'assets/images/others/thumb-9.jpg',
-        category: 'Home Decoration',
-        price: 912,
-        quantity: 23,
-        status: 'in stock',
-        checked : false
-    },
-    {
-        id: 32,
-        name: 'Beat Headphone',
-        avatar: 'assets/images/others/thumb-10.jpg',
-        category: 'Eletronic',
-        price: 137,
-        quantity: 56,
-        status: 'in stock',
-        checked : false
-    },
-    {
-        id: 33,
-        name: 'Wooden Rhino',
-        avatar: 'assets/images/others/thumb-11.jpg',
-        category: 'Home Decoration',
-        price: 912,
-        quantity: 12,
-        status: 'in stock',
-        checked : false
-    },
-    {
-        id: 34,
-        name: 'Red Chair',
-        avatar: 'assets/images/others/thumb-12.jpg',
-        category: 'Home Decoration',
-        price: 128,
-        quantity: 0,
-        status: 'out of stock',
-        checked : false
-    },
-    {
-        id: 35,
-        name: 'Wristband',
-        avatar: 'assets/images/others/thumb-13.jpg',
-        category: 'Eletronic',
-        price: 776,
-        quantity: 0,
-        status: 'out of stock',
-        checked : false
-    },
-    {
-        id: 36,
-        name: 'Charging Cable',
-        avatar: 'assets/images/others/thumb-14.jpg',
-        category: 'Eletronic',
-        price: 119,
-        quantity: 37,
-        status: 'in stock',
-        checked : false
-    },
-    {
-        id: 37,
-        name: 'Three Legs',
-        avatar: 'assets/images/others/thumb-15.jpg',
-        category: 'Home Decoration',
-        price: 199,
-        quantity: 17,
-        status: 'in stock',
-        checked : false
-    },
-  ]
+  productsList = []
 
-  constructor(private tableSvc : TableService) {
-    this.displayData = this.productsList
+  isVisible = false;
+  isOkLoading = false;
+
+  validateFormUsuario: FormGroup<{
+    id_empresa: FormControl<string>;
+    id_empleado: FormControl<string>;
+    id_rol: FormControl<string>;
+    usuario: FormControl<string>;
+    contrasena: FormControl<string>;
+  }>;
+
+  auxIdUsuario : number = 0;
+
+  roles: any[]=[];
+  empleados: any[]=[];
+
+  constructor(private tableSvc : TableService, private fb: NonNullableFormBuilder, private api: ApiService, private modal: NzModalService) {
+    this.displayData = this.productsList;
+
+    this.validateFormUsuario = this.fb.group({
+      id_empresa: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      id_empleado: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      id_rol: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      usuario: ['', [Validators.required]],
+      contrasena: ['', [Validators.required]],
+    });
   }
 
   ngOnInit(): void {
+    this.listarUsuarios();
+    this.listarRoles();
+    this.listarEmpleados();
   }
 
   search(): void {
@@ -137,14 +86,102 @@ export class UsuariosComponent implements OnInit {
     this.displayData = this.tableSvc.search(this.searchInput, data )
   }
 
-  categoryChange(value: string): void {
-      const data = this.productsList
-      value !== 'All'? this.displayData = data.filter(elm => elm.category === value) : this.displayData = data
+  showModal(tipo: string, usuario? : any): void {
+    if (tipo == 'nuevo') {
+      this.isVisible = true;
+      this.auxIdUsuario = 0;
+    } else {
+      console.log(usuario);
+      this.auxIdUsuario = usuario.id_usuario;
+      this.validateFormUsuario.controls.id_empresa.setValue(usuario.id_empresa);
+      this.validateFormUsuario.controls.id_empleado.setValue(usuario.id_empleado);
+      this.validateFormUsuario.controls.id_rol.setValue(usuario.id_rol);
+      this.validateFormUsuario.controls.usuario.setValue(usuario.usuario);
+      this.validateFormUsuario.controls.contrasena.setValue(usuario.contrasena);
+      console.log(this.validateFormUsuario.value);
+      this.isVisible = true;
+    }
   }
 
-  statusChange(value: string): void {
-      const data = this.productsList
-      value !== 'All'? this.displayData = data.filter(elm => elm.status === value) : this.displayData = data
+  handleOk(): void {
+
+    if (this.auxIdUsuario == 0) {
+      this.isOkLoading = true;
+      this.validateFormUsuario.controls.id_empresa.setValue('1');
+
+      this.api.consulta('usuarios', 'post', this.validateFormUsuario.value).subscribe((resp) => {
+
+
+        this.isVisible = false;
+        this.isOkLoading = false;
+        this.validateFormUsuario.reset();
+        this.ngOnInit();
+
+      });
+    } else {
+      this.isOkLoading = true;
+
+      this.api.consulta('usuarios/'+this.auxIdUsuario, 'put', this.validateFormUsuario.value).subscribe((resp) => {
+
+         this.isVisible = false;
+          this.isOkLoading = false;
+          this.validateFormUsuario.reset();
+          this.ngOnInit();
+
+
+      });
+    }
+
+
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
+  }
+
+
+
+  listarUsuarios(){
+    this.api.consulta('usuarios', 'get').subscribe((resp) => {
+
+      this.displayData = resp.data;
+      this.productsList =  resp.data;
+    });
+  }
+
+  listarRoles(){
+    this.api.consulta('roles', 'get').subscribe((resp) => {
+
+      this.roles = resp.data;
+    });
+  }
+
+  listarEmpleados(){
+    this.api.consulta('empleados', 'get').subscribe((resp) => {
+
+      this.empleados = resp.data;
+    });
+  }
+
+
+
+  showDeleteConfirm(id: any): void {
+    this.modal.confirm({
+      nzTitle: 'Desea eliminar ah este usuario?',
+      nzOkText: 'Si',
+      nzOkType: 'primary',
+      nzOkDanger: true,
+      nzOnOk: () => this.eliminarUsuario(id),
+      nzCancelText: 'No',
+      nzOnCancel: () => console.log('Cancel')
+    });
+  }
+
+  eliminarUsuario(id: any) {
+    this.api.consulta('usuarios/'+id, 'delete').subscribe((resp) => {
+
+      this.ngOnInit();
+    });
   }
 
 }

@@ -174,7 +174,8 @@ export class ProveedoresComponent implements OnInit {
 
         this.isVisible = false;
         this.isOkLoading = false;
-
+        this.validateFormPerson.reset();
+        this.validateFormProveedor.reset();
         this.ngOnInit();
 
       });
@@ -185,7 +186,8 @@ export class ProveedoresComponent implements OnInit {
 
          this.isVisible = false;
           this.isOkLoading = false;
-
+          this.validateFormPerson.reset();
+          this.validateFormProveedor.reset();
           this.ngOnInit();
 
 

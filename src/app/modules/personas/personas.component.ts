@@ -139,7 +139,7 @@ export class PersonasComponent implements OnInit {
 
         this.isVisible = false;
         this.isOkLoading = false;
-
+        this.validateFormPerson.reset();
         this.ngOnInit();
 
       });
@@ -150,7 +150,7 @@ export class PersonasComponent implements OnInit {
 
          this.isVisible = false;
           this.isOkLoading = false;
-
+          this.validateFormPerson.reset();
           this.ngOnInit();
 
 

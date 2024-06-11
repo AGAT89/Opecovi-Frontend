@@ -111,7 +111,7 @@ export class CargosComponent implements OnInit {
 
         this.isVisible = false;
         this.isOkLoading = false;
-
+        this.validateFormCargo.reset();
         this.ngOnInit();
 
       });
@@ -122,7 +122,7 @@ export class CargosComponent implements OnInit {
 
          this.isVisible = false;
           this.isOkLoading = false;
-
+          this.validateFormCargo.reset();
           this.ngOnInit();
 
 

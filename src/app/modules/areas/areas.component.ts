@@ -106,7 +106,7 @@ export class AreasComponent implements OnInit {
 
         this.isVisible = false;
         this.isOkLoading = false;
-
+        this.validateFormArea.reset();
         this.ngOnInit();
 
       });
@@ -117,7 +117,7 @@ export class AreasComponent implements OnInit {
 
          this.isVisible = false;
           this.isOkLoading = false;
-
+          this.validateFormArea.reset();
           this.ngOnInit();
 
 

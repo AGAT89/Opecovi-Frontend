@@ -206,7 +206,8 @@ export class EmpleadosComponent implements OnInit {
 
         this.isVisible = false;
         this.isOkLoading = false;
-
+        this.validateFormEmpleado.reset();
+        this.validateFormPerson.reset();
         this.ngOnInit();
 
       });
@@ -217,7 +218,8 @@ export class EmpleadosComponent implements OnInit {
 
          this.isVisible = false;
           this.isOkLoading = false;
-
+          this.validateFormEmpleado.reset();
+          this.validateFormPerson.reset();
           this.ngOnInit();
 
 

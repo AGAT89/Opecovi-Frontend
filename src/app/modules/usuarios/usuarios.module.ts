@@ -14,6 +14,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { ThemeConstantService } from 'src/app/shared/services/theme-constant.service';
 import { AppsService } from 'src/app/shared/services/apps.service';
 import { TableService } from 'src/app/shared/services/table.service';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const antdModule = [
   NzButtonModule,
@@ -22,7 +25,9 @@ const antdModule = [
   NzInputModule,
   NzDropDownModule,
   NzSelectModule,
-  NzTableModule
+  NzTableModule,
+  NzModalModule,
+  NzGridModule
 ]
 
 @NgModule({
@@ -33,6 +38,8 @@ const antdModule = [
     SharedModule,
     CommonModule,
     UsuariosRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
     ...antdModule
   ],
   providers: [
