@@ -98,6 +98,8 @@ export class PersonasComponent implements OnInit {
 
   ngOnInit(): void {
     this.listarPersonas();
+    this.validateFormPerson.controls.es_empleado.setValue('0');
+        this.validateFormPerson.controls.es_proveedor.setValue('0');
   }
 
   search(): void {
