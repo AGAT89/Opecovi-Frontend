@@ -89,6 +89,46 @@ export const ROUTES: SideNavInterface[] = [
       icon: 'user',
       submenu: []
     },
+    {
+      path: 'requerimientos',
+      title: 'Requerimientos Emitidos',
+      iconType: 'nzIcon',
+      iconTheme: 'outline',
+      icon: 'user',
+      submenu: []
+    },
+    {
+      path: 'requerimientos-recibidos',
+      title: 'Requerimientos Recibidos',
+      iconType: 'nzIcon',
+      iconTheme: 'outline',
+      icon: 'user',
+      submenu: []
+    },
+    {
+      path: '',
+      title: 'Solicitudes de Compra',
+      iconType: 'nzIcon',
+      iconTheme: 'outline',
+      icon: 'user',
+      submenu: []
+    },
+    {
+      path: '',
+      title: 'Ordenes de Compra',
+      iconType: 'nzIcon',
+      iconTheme: 'outline',
+      icon: 'user',
+      submenu: []
+    },
+    {
+      path: '',
+      title: 'Cotizaciones',
+      iconType: 'nzIcon',
+      iconTheme: 'outline',
+      icon: 'user',
+      submenu: []
+    },
 
     // {
     //     path: '',

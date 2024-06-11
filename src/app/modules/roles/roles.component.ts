@@ -122,6 +122,9 @@ export class RolesComponent implements OnInit {
         this.isOkLoading = false;
 
         this.ngOnInit();
+        this.permisos = []
+        this.permisosActuales = [];
+        this.validateFormRol.reset();
 
       });
     } else {
@@ -150,6 +153,10 @@ export class RolesComponent implements OnInit {
           this.isOkLoading = false;
 
           this.ngOnInit();
+
+        this.permisos = []
+        this.permisosActuales = [];
+          this.validateFormRol.reset();
 
 
       });
@@ -192,7 +199,7 @@ export class RolesComponent implements OnInit {
   }
 
   eliminarRol(id: any) {
-    this.api.consulta('arroleseas/'+id, 'delete').subscribe((resp) => {
+    this.api.consulta('roles/'+id, 'delete').subscribe((resp) => {
 
       this.ngOnInit();
     });

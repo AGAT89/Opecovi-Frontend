@@ -19,7 +19,7 @@ export class Login1Component {
             this.loginForm.controls[ i ].updateValueAndValidity();
         }
 
-      if (this.loginForm.controls.userName.value == 'asd' && this.loginForm.controls.password.value == 'asd') {
+      if (this.loginForm.controls.userName.value == 'aarias' && this.loginForm.controls.password.value == '123456') {
         this.router.navigate(['roles']);
       }
     }

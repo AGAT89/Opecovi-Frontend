@@ -35,6 +35,13 @@ export const CommonLayout_ROUTES: Routes = [
       path: 'cargos',
       loadChildren: () => import('../../modules/cargos/cargos.module').then(m => m.CargosModule),
     },
-
+    {
+      path: 'requerimientos',
+      loadChildren: () => import('../../modules/requerimientos/requerimientos.module').then(m => m.RequerimientosModule),
+    },
+    {
+      path: 'requerimientos-recibidos',
+      loadChildren: () => import('../../modules/requerimientos-recibidos/requerimientos-recibidos.module').then(m => m.RequerimientosRecibidosModule),
+    },
 
 ];

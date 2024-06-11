@@ -70,6 +70,7 @@ export class CargosComponent implements OnInit {
       cod_cargo: ['', [Validators.required]],
       nomb_cargo: ['', [Validators.required]],
     });
+
   }
 
   ngOnInit(): void {
