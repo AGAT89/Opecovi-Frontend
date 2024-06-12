@@ -41,6 +41,10 @@ export class UsuariosComponent implements OnInit {
         compare: (a: DataItem, b: DataItem) => a.usuarios.localeCompare(b.usuarios)
     },
     {
+        title: 'Rol',
+        compare: (a: DataItem, b: DataItem) => a.usuarios.localeCompare(b.usuarios)
+    },
+    {
         title: 'Acciones'
     }
   ]
