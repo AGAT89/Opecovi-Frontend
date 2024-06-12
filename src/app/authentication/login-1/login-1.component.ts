@@ -1,6 +1,7 @@
 import { Component } from '@angular/core'
 import { UntypedFormBuilder, UntypedFormGroup,  Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ApiService } from 'src/app/shared/services/api.service';
 //import {  } from "module";
 
 
@@ -11,6 +12,8 @@ import { Router } from '@angular/router';
 export class Login1Component {
     loginForm: UntypedFormGroup;
 
+    credenciales = false;
+
     submitForm(): void {
       console.log(this.loginForm.controls.userName.value);
       console.log(this.loginForm.controls.password.value);
@@ -19,12 +22,34 @@ export class Login1Component {
             this.loginForm.controls[ i ].updateValueAndValidity();
         }
 
-      if (this.loginForm.controls.userName.value == 'aarias' && this.loginForm.controls.password.value == '123456') {
-        this.router.navigate(['roles']);
-      }
+      // if (this.loginForm.controls.userName.value == 'aarias' && this.loginForm.controls.password.value == '123456') {
+      //   this.router.navigate(['roles']);
+      // }
+
+      let body = {
+        usuario: this.loginForm.controls.userName.value,
+        password: this.loginForm.controls.password.value
+      };
+
+      this.api.consulta('auth/login', 'post', body).subscribe((resp) => {
+        if (resp.statusCode == 200) {
+          this.credenciales = false;
+
+          console.log(resp.data);
+
+          // Convierte el objeto JSON a una cadena de texto
+          const jsonString = JSON.stringify(resp.data);
+          // Guarda la cadena de texto en localStorage
+          localStorage.setItem('usuario', jsonString);
+
+          this.router.navigate(['/roles']);
+        } else {
+          this.credenciales = true;
+        }
+      });
     }
 
-    constructor(private fb: UntypedFormBuilder, private router: Router) {
+    constructor(private fb: UntypedFormBuilder, private router: Router, private api: ApiService) {
     }
 
     ngOnInit(): void {

@@ -47,6 +47,7 @@
                                 </nz-form-control>
                             </nz-form-item>
                         </form>
+                        <p class="m-b-30" *ngIf="credenciales" style="color: red;">Credenciales incorrectas.</p>
                         <ng-template #prefixUser><i nz-icon nzType="user"></i></ng-template>
                         <ng-template #prefixLock><i nz-icon nzType="lock"></i></ng-template>
                     </div>
