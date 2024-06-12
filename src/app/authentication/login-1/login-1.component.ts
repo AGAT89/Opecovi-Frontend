@@ -41,8 +41,8 @@ export class Login1Component {
           const jsonString = JSON.stringify(resp.data);
           // Guarda la cadena de texto en localStorage
           localStorage.setItem('usuario', jsonString);
-
-          this.router.navigate(['/roles']);
+          let ruta: string = resp.data.rol.permisos[0].modulo.path;
+          this.router.navigate([ruta]);
         } else {
           this.credenciales = true;
         }
