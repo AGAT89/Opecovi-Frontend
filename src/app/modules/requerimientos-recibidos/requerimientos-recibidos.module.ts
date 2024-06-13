@@ -17,6 +17,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ThemeConstantService } from 'src/app/shared/services/theme-constant.service';
 import { AppsService } from 'src/app/shared/services/apps.service';
 import { TableService } from 'src/app/shared/services/table.service';
+import { ShowComponent } from './show/show.component';
 
 const antdModule = [
   NzButtonModule,
@@ -32,7 +33,8 @@ const antdModule = [
 
 @NgModule({
   declarations: [
-    RequerimientosRecibidosComponent
+    RequerimientosRecibidosComponent,
+    ShowComponent
   ],
   imports: [
     SharedModule,

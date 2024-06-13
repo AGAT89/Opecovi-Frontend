@@ -18,6 +18,7 @@ import { ThemeConstantService } from 'src/app/shared/services/theme-constant.ser
 import { AppsService } from 'src/app/shared/services/apps.service';
 import { TableService } from 'src/app/shared/services/table.service';
 import { CreateComponent } from './create/create.component';
+import { EditComponent } from './edit/edit.component';
 
 const antdModule = [
   NzButtonModule,
@@ -34,7 +35,8 @@ const antdModule = [
 @NgModule({
   declarations: [
     RequerimientosComponent,
-    CreateComponent
+    CreateComponent,
+    EditComponent
   ],
   imports: [
     SharedModule,
