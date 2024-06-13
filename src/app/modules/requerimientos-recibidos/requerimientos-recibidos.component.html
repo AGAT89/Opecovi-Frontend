@@ -36,11 +36,11 @@
 
               <td>{{item.empleado.persona.nombres}} - {{item.empleado.persona.apellido_paterno}}</td>
               <td class="text-md-right" [width]="120" style="text-align: center!important;">
-                  <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Editar" (click)="showModal('editar', item)">
-                      <i nz-icon nzType="edit" theme="outline"></i>
-                  </a>
-                  <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Eliminar" (click)="showDeleteConfirm(item.id_area)">
-                      <i nz-icon nzType="delete" theme="outline"></i>
+                  <!-- <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Ver" (click)="showModal('editar', item)">
+                      <i nz-icon nzType="eye" theme="outline"></i>
+                  </a> -->
+                  <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Ver" (click)="showDeleteConfirm(item.id_area)">
+                      <i nz-icon nzType="eye" theme="outline"></i>
                   </button>
               </td>
           </tr>
