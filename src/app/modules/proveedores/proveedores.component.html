@@ -1,72 +1,81 @@
+<!-- Inicio de nz-card para contener el contenido -->
 <nz-card>
+  <!-- Row para la barra de búsqueda y botón Nuevo Proveedor -->
   <div class="row m-b-30">
-      <div class="col-lg-8">
-          <div class="d-md-flex">
-              <div class="m-b-10 m-r-20">
-                  <nz-input-group [nzPrefix]="prefixTemplate">
-                      <input type="text" nz-input placeholder="Buscar..." [(ngModel)]="searchInput" (ngModelChange)="search()">
-                  </nz-input-group>
-                  <ng-template #prefixTemplate>
-                      <i nz-icon nzType="search" class="opacity-05"></i>
-                  </ng-template>
-              </div>
-          </div>
+    <!-- Columna para la barra de búsqueda -->
+    <div class="col-lg-8">
+      <div class="d-md-flex">
+        <div class="m-b-10 m-r-20">
+          <!-- Input de búsqueda con ícono de búsqueda -->
+          <nz-input-group [nzPrefix]="prefixTemplate">
+            <input type="text" nz-input placeholder="Buscar..." [(ngModel)]="searchInput" (ngModelChange)="search()">
+          </nz-input-group>
+          <!-- Plantilla para el ícono de búsqueda -->
+          <ng-template #prefixTemplate>
+            <i nz-icon nzType="search" class="opacity-05"></i>
+          </ng-template>
+        </div>
       </div>
-      <div class="col-lg-4 text-right">
-          <button nz-button nzType="primary"  (click)="showModal('nuevo')">
-              <i nz-icon nzType="plus-circle" theme="outline"></i>
-              <span>Nuevo Proveedor</span>
-          </button>
-      </div>
+    </div>
+    <!-- Columna para el botón Nuevo Proveedor -->
+    <div class="col-lg-4 text-right">
+      <button nz-button nzType="primary" (click)="showModal('nuevo')">
+        <i nz-icon nzType="plus-circle" theme="outline"></i>
+        <span>Nuevo Proveedor</span>
+      </button>
+    </div>
   </div>
+
+  <!-- Tabla para mostrar la lista de proveedores -->
   <nz-table #productsListTable [nzData]="displayData">
-      <thead>
-          <tr>
-              <th *ngFor="let column of orderColumn" [nzSortFn]="column.compare">{{ column.title }}</th>
-          </tr>
-      </thead>
-      <tbody>
-          <tr *ngFor="let item of productsListTable.data;  let i=index">
-              <td>{{i+1}}</td>
-              <td>{{item.persona.nombres}}</td>
-              <td>{{item.persona.apellido_paterno}} {{item.persona.apellido_materno}}</td>
-
-              <td>{{item.persona.tipo_persona}}</td>
-
-              <td>{{item.persona.documento_identidad}}</td>
-
-              <td>{{item.persona.telefono}}</td>
-              <td>{{item.giro_negocio}}</td>
-              <td class="text-md-right" [width]="120" style="text-align: center!important;">
-                  <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Editar" (click)="showModal('editar', item)">
-                      <i nz-icon nzType="edit" theme="outline"></i>
-                  </a>
-                  <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Eliminar" (click)="showDeleteConfirm(item.id_proveedor)">
-                      <i nz-icon nzType="delete" theme="outline"></i>
-                  </button>
-              </td>
-          </tr>
-      </tbody>
+    <thead>
+      <tr>
+        <!-- Cabeceras de columna dinámicas -->
+        <th *ngFor="let column of orderColumn" [nzSortFn]="column.compare">{{ column.title }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filas de datos de proveedores -->
+      <tr *ngFor="let item of productsListTable.data; let i=index">
+        <td>{{i+1}}</td>
+        <td>{{item.persona.nombres}}</td>
+        <td>{{item.persona.apellido_paterno}} {{item.persona.apellido_materno}}</td>
+        <td>{{item.persona.tipo_persona}}</td>
+        <td>{{item.persona.documento_identidad}}</td>
+        <td>{{item.persona.telefono}}</td>
+        <td>{{item.giro_negocio}}</td>
+        <td class="text-md-right" [width]="120" style="text-align: center!important;">
+          <!-- Botones de editar y eliminar para cada proveedor -->
+          <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Editar" (click)="showModal('editar', item)">
+            <i nz-icon nzType="edit" theme="outline"></i>
+          </a>
+          <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Eliminar" (click)="showDeleteConfirm(item.id_proveedor)">
+            <i nz-icon nzType="delete" theme="outline"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
   </nz-table>
 </nz-card>
 
+<!-- Modal para Nuevo/Editar Proveedor -->
 <nz-modal
-[(nzVisible)]="isVisible"
-nzTitle="{{ auxIdProveedor == 0 ? 'Nueva Proveedor' : 'Editar Proveedor'}}"
-(nzOnCancel)="handleCancel()"
-(nzOnOk)="handleOk()"
-[nzOkLoading]="isOkLoading"
-nzWidth="50%"
-nzCancelText="Cancelar"
-nzOkText="{{ auxIdProveedor == 0 ? 'Guardar' : 'Actualizar'}}"
+  [(nzVisible)]="isVisible"
+  nzTitle="{{ auxIdProveedor == 0 ? 'Nuevo Proveedor' : 'Editar Proveedor'}}"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  nzWidth="50%"
+  nzCancelText="Cancelar"
+  nzOkText="{{ auxIdProveedor == 0 ? 'Guardar' : 'Actualizar'}}"
 >
   <ng-container *nzModalContent>
-
-
-    <form nz-form [formGroup]="validateFormPerson"  style="max-width: 100%;">
+    <!-- Formulario para la información de la persona -->
+    <form nz-form [formGroup]="validateFormPerson" style="max-width: 100%;">
       <div nz-row>
+        <!-- Columna para Número Documento -->
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El formato del correo no es válido">
             <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
               <input type="text" nz-input placeholder="Número Documento" formControlName="documento_identidad"/>
             </nz-input-group>
@@ -74,73 +83,79 @@ nzOkText="{{ auxIdProveedor == 0 ? 'Guardar' : 'Actualizar'}}"
               <button nz-button nzType="primary" nzSearch (click)="buscarNumeroDocumento()"><span nz-icon nzType="search"></span></button>
             </ng-template>
           </nz-form-control>
-
         </div>
+        <!-- Columna para Tipo de persona -->
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Este campos es requerido!">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Este campo es requerido">
             <input nz-input id="tipo_persona" formControlName="tipo_persona" placeholder="Tipo de persona" />
           </nz-form-control>
         </div>
       </div>
 
       <div nz-row>
+        <!-- Columna para Tipo de documento -->
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El formato del correo no es válido">
             <input nz-input formControlName="tipo_documento" id="tipo_documento" placeholder="Tipo de documento"/>
           </nz-form-control>
         </div>
+        <!-- Columna para Apellido paterno -->
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El formato del correo no es válido">
             <input nz-input formControlName="apellido_paterno" id="apellido_paterno" placeholder="Apellido paterno"/>
           </nz-form-control>
         </div>
       </div>
       <div nz-row>
+        <!-- Columna para Apellido materno -->
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El formato del correo no es válido">
             <input nz-input formControlName="apellido_materno" id="apellido_materno" placeholder="Apellido materno"/>
           </nz-form-control>
         </div>
+        <!-- Columna para Nombres -->
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El formato del correo no es válido">
             <input nz-input formControlName="nombres" id="nombres" placeholder="Nombres"/>
           </nz-form-control>
         </div>
       </div>
       <div nz-row>
+        <!-- Columna para Ubigeo -->
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El formato del correo no es válido">
             <input nz-input formControlName="ubigeo" id="ubigeo" placeholder="Ubigeo"/>
           </nz-form-control>
         </div>
+        <!-- Columna para Teléfono -->
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El formato del correo no es válido">
             <input nz-input formControlName="telefono" id="telefono" placeholder="Teléfono"/>
           </nz-form-control>
         </div>
       </div>
       <div nz-row>
+        <!-- Columna para Dirección -->
         <div nz-col nzSpan="24" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <input nz-input formControlName="direccion" id="direccion" placeholder="Direccion"/>
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El formato del correo no es válido">
+            <input nz-input formControlName="direccion" id="direccion" placeholder="Dirección"/>
           </nz-form-control>
         </div>
-
       </div>
     </form>
 
-    <form nz-form [formGroup]="validateFormProveedor"  style="max-width: 100%;">
-
+    <!-- Formulario para la información del proveedor -->
+    <form nz-form [formGroup]="validateFormProveedor" style="max-width: 100%;">
       <div nz-row>
-        <div nz-col nzSpan="24" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <input nz-input formControlName="giro_negocio" id="giro_negocio" placeholder="Giro del negocio"/>
-          </nz-form-control>
-        </div>
-
-      </div>
-    </form>
+         <!-- Columna para el campo Giro del negocio -->
+    <div nz-col nzSpan="24" style="padding: 2%;">
+      <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El formato del correo no es válido">
+        <nz-select formControlName="giro_negocio" nzPlaceHolder="Selecciona el giro de negocio">
+          <nz-option *ngFor="let giro of girosNegocio" [nzLabel]="giro.codigo + ' - ' + giro.nombre" [nzValue]="giro.codigo"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </div>
+  </div>
+</form>
   </ng-container>
-
-
 </nz-modal>

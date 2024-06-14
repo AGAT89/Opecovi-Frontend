@@ -229,7 +229,19 @@ export class ProveedoresComponent implements OnInit {
     });
   }
 
-
+  girosNegocio = [
+    { codigo: '001', nombre: 'Bebidas' },
+    { codigo: '002', nombre: 'Estanteria' },
+    { codigo: '003', nombre: 'Impresiones' },
+    { codigo: '004', nombre: 'Insumos Operativos' },
+    { codigo: '005', nombre: 'Libreria' },
+    { codigo: '006', nombre: 'Limpieza' },
+    { codigo: '007', nombre: 'Papeleria' },
+    { codigo: '008', nombre: 'Seguros' },
+    { codigo: '009', nombre: 'Tecnología' },
+    { codigo: '010', nombre: 'Telefonia' },
+    { codigo: '011', nombre: 'Uniformes' }
+  ];
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
