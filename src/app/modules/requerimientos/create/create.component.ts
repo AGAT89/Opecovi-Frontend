@@ -106,19 +106,10 @@ export class CreateComponent implements OnInit {
   }
 
   showModal(tipo: string, area? : any): void {
-    // if (tipo == 'nuevo') {
+
       this.isVisible = true;
       this.auxIdArea = 0;
-    // } else {
-    //   console.log(area);
-    //   this.auxIdArea = area.id_area;
-    //   this.validateFormArea.controls.id_empresa.setValue(area.id_empresa);
-    //   this.validateFormArea.controls.cod_area.setValue(area.cod_area);
-    //   this.validateFormArea.controls.nomb_area.setValue(area.nomb_area);
-    //   this.validateFormArea.controls.centro_costos.setValue(area.centro_costos);
 
-    //   this.isVisible = true;
-    // }
   }
 
   handleOk(): void {
@@ -190,7 +181,7 @@ export class CreateComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah esta area?',
+      nzTitle: 'Desea eliminar ah este articulo?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,
