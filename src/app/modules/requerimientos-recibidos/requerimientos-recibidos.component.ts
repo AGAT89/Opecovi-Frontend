@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ApiService } from 'src/app/shared/services/api.service';
 import { TableService } from 'src/app/shared/services/table.service';
@@ -64,7 +65,7 @@ export class RequerimientosRecibidosComponent implements OnInit {
 
   auxIdArea : number = 0;
 
-  constructor(private tableSvc : TableService, private fb: NonNullableFormBuilder, private api: ApiService, private modal: NzModalService) {
+  constructor(private tableSvc : TableService, private fb: NonNullableFormBuilder, private api: ApiService, private modal: NzModalService, private router: Router) {
     this.displayData = this.productsList;
 
     this.validateFormArea = this.fb.group({
@@ -167,4 +168,7 @@ export class RequerimientosRecibidosComponent implements OnInit {
     });
   }
 
+  verRequerimiento(param: any): void {
+    this.router.navigate(['/requerimientos-recibidos/ver', param]);
+  }
 }
