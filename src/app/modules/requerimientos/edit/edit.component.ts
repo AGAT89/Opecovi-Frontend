@@ -225,7 +225,7 @@ export class EditComponent implements OnInit {
         this.displayData.push({
           cod_articulo: element.articulo.cod_articulo,
           id_articulo: element.id_articulo,
-          nomb_articulo : element.nomb_articulo,
+          nomb_articulo : element.articulo.nomb_articulo,
           cant_solicitada : element.cant_solicitada
         });
       });
