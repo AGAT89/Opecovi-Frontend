@@ -41,9 +41,9 @@ export class ShowComponent implements OnInit {
         title: 'Cantidad solicitada',
         compare: (a: DataItem, b: DataItem) => a.centro_costos.localeCompare(b.centro_costos)
     },
-    {
-        title: 'Acciones'
-    }
+    // {
+    //     title: 'Acciones'
+    // }
   ]
 
   productsList = []
@@ -96,6 +96,8 @@ export class ShowComponent implements OnInit {
       cant_solicitada: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       cant_atendida: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
     });
+
+    this.validateFormRequerimiento.controls.nro_requerimiento.disable();
   }
 
   ngOnInit(): void {
@@ -225,7 +227,7 @@ export class ShowComponent implements OnInit {
         this.displayData.push({
           cod_articulo: element.articulo.cod_articulo,
           id_articulo: element.id_articulo,
-          nomb_articulo : element.nomb_articulo,
+          nomb_articulo : element.articulo.nomb_articulo,
           cant_solicitada : element.cant_solicitada
         });
       });
