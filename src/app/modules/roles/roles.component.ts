@@ -89,7 +89,7 @@ export class RolesComponent implements OnInit {
       this.validateFormRol.controls.nomb_rol.setValue(rol.nomb_rol);
 
       rol.permisos.forEach(element => {
-        if (element.es_activo == 1) {
+        if (element.es_activo == 1 || element.es_activo == '1') {
           this.permisos.push(element.id_modulo);
           this.permisosActuales.push(element.id_permisos);
         }
