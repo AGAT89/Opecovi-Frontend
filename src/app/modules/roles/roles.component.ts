@@ -57,7 +57,6 @@ export class RolesComponent implements OnInit {
   permisosActuales: any[] = [];
 
   listOfOption: string[] = [];
-  listOfSelectedValue = ['a10', 'c12'];
 
   constructor(private tableSvc : TableService, private fb: NonNullableFormBuilder, private api: ApiService, private modal: NzModalService) {
     this.displayData = this.productsList;

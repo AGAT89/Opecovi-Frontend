@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 export class ApiService {
 
   apiUrl = 'http://127.0.0.1:8000/api/';
+
   apiPeruRUC = 'https://apiperu.dev/api/ruc';
   apiPeruDNI = 'https://apiperu.dev/api/dni';
 

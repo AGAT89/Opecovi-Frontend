@@ -29,15 +29,18 @@ export class SideNavComponent{
 
         this.usuario.rol.permisos.forEach(element => {
           console.log(element.modulo);
-          let item: SideNavInterface = {
-            path: element.modulo.path.toString(),
-            title: element.modulo.nomb_modulo.toString(),
-            iconType: 'nzIcon',
-            icon: element.modulo.icon,
-            iconTheme: 'outline',
-            submenu: []
-          };
-          this.auxMenu.push(item);
+          if (element.es_activo == 1) {
+            let item: SideNavInterface = {
+              path: element.modulo.path.toString(),
+              title: element.modulo.nomb_modulo.toString(),
+              iconType: 'nzIcon',
+              icon: element.modulo.icon,
+              iconTheme: 'outline',
+              submenu: []
+            };
+            this.auxMenu.push(item);
+          }
+
         });
 
          this.menuItems = this.auxMenu;//ROUTES.filter(menuItem => menuItem);

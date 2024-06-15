@@ -3,10 +3,10 @@ import { RolesComponent } from 'src/app/modules/roles/roles.component';
 // import { UsuariosComponent } from 'src/app/modules/usuarios/usuarios.component';
 
 export const CommonLayout_ROUTES: Routes = [
-    {
-        path: 'dashboard',
-        loadChildren: () => import('../../dashboard/dashboard.module').then(m => m.DashboardModule),
-    },
+    // {
+    //     path: 'dashboard',
+    //     loadChildren: () => import('../../dashboard/dashboard.module').then(m => m.DashboardModule),
+    // },
     {
       path: 'roles',
       loadChildren: () => import('../../modules/roles/roles.module').then(m => m.RolesModule),
@@ -42,6 +42,10 @@ export const CommonLayout_ROUTES: Routes = [
     {
       path: 'requerimientos-recibidos',
       loadChildren: () => import('../../modules/requerimientos-recibidos/requerimientos-recibidos.module').then(m => m.RequerimientosRecibidosModule),
+    },
+    {
+      path: 'articulos',
+      loadChildren: () => import('../../modules/articulos/articulos.module').then(m => m.ArticulosModule),
     },
 
 ];
