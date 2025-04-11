@@ -190,7 +190,7 @@ export class EditComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah este articulo?',
+      nzTitle: 'Desea eliminar este articulo?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,

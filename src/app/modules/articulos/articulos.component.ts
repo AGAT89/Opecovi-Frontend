@@ -5,10 +5,12 @@ import { ApiService } from 'src/app/shared/services/api.service';
 import { TableService } from 'src/app/shared/services/table.service';
 
 interface DataItem {
-  id: number;
-  cod_area: string;
-  nomb_area: string;
-  centro_costos: string;
+  id_articulo: number;
+  cod_articulo: string;
+  nomb_articulo: string;
+  unidad_medida: string;
+  contenido_articulo: string;
+  tipo_articulo: string;
 }
 
 @Component({
@@ -26,24 +28,30 @@ export class ArticulosComponent implements OnInit {
   orderColumn = [
     {
         title: '#',
-        compare: (a: DataItem, b: DataItem) => a.id - b.id,
+        compare: (a: DataItem, b: DataItem) => a.id_articulo - b.id_articulo,
     },
     {
         title: 'Codigo',
-        compare: (a: DataItem, b: DataItem) => a.cod_area.localeCompare(b.cod_area)
+        compare: (a: DataItem, b: DataItem) => a.cod_articulo.localeCompare(b.cod_articulo)
     },
     {
         title: 'Nombre articulo',
-        compare: (a: DataItem, b: DataItem) => a.nomb_area.localeCompare(b.nomb_area)
+        compare: (a: DataItem, b: DataItem) => a.nomb_articulo.localeCompare(b.nomb_articulo)
     },
     {
         title: 'Unidad medida',
-        compare: (a: DataItem, b: DataItem) => a.centro_costos.localeCompare(b.centro_costos)
+        compare: (a: DataItem, b: DataItem) => a.unidad_medida.localeCompare(b.unidad_medida)
     },
     {
+      title: 'Contenido articulo',
+      compare: (a: DataItem, b: DataItem) => a.unidad_medida.localeCompare(b.unidad_medida)
+  },
+    {
       title: 'Tipo articulo',
-      compare: (a: DataItem, b: DataItem) => a.centro_costos.localeCompare(b.centro_costos)
+      compare: (a: DataItem, b: DataItem) => a.tipo_articulo.localeCompare(b.tipo_articulo)
     },
+   
+   
     {
         title: 'Acciones'
     }
@@ -54,28 +62,32 @@ export class ArticulosComponent implements OnInit {
   isVisible = false;
   isOkLoading = false;
 
-  validateFormArea: FormGroup<{
+  validateFormArticulo: FormGroup<{
     id_empresa: FormControl<string>;
-    cod_area: FormControl<string>;
-    nomb_area: FormControl<string>;
-    centro_costos: FormControl<string>;
+    cod_articulo: FormControl<string>;
+    nomb_articulo: FormControl<string>;
+    unidad_medida: FormControl<string>;
+    contenido_articulo: FormControl<number>;
+    tipo_articulo: FormControl<string>;
   }>;
 
-  auxIdArea : number = 0;
+  auxIdArticulo: number = 0;
 
   constructor(private tableSvc : TableService, private fb: NonNullableFormBuilder, private api: ApiService, private modal: NzModalService) {
     this.displayData = this.productsList;
 
-    this.validateFormArea = this.fb.group({
+    this.validateFormArticulo = this.fb.group({
       id_empresa: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      cod_area: ['', [Validators.required]],
-      nomb_area: ['', [Validators.required]],
-      centro_costos: ['', [Validators.required]],
+      cod_articulo: ['', [Validators.required]],
+      nomb_articulo: ['', [Validators.required]],
+      unidad_medida: ['', [Validators.required]],
+      contenido_articulo: [0, [Validators.required]],
+      tipo_articulo: ['', [Validators.required]],
     });
   }
 
   ngOnInit(): void {
-    this.listarAreas();
+    this.listarArticulos();
   }
 
   search(): void {
@@ -83,59 +95,56 @@ export class ArticulosComponent implements OnInit {
     this.displayData = this.tableSvc.search(this.searchInput, data )
   }
 
-  showModal(tipo: string, area? : any): void {
-    if (tipo == 'nuevo') {
-      this.isVisible = true;
-      this.auxIdArea = 0;
-    } else {
-      console.log(area);
-      this.auxIdArea = area.id_area;
-      this.validateFormArea.controls.id_empresa.setValue(area.id_empresa);
-      this.validateFormArea.controls.cod_area.setValue(area.cod_area);
-      this.validateFormArea.controls.nomb_area.setValue(area.nomb_area);
-      this.validateFormArea.controls.centro_costos.setValue(area.centro_costos);
-
-      this.isVisible = true;
+  showModal(tipo: string, articulo?: DataItem): void {
+    this.isVisible = true;
+  
+    if (tipo === 'nuevo') {
+      this.auxIdArticulo = 0;
+      this.validateFormArticulo.reset();
+    } else if (articulo) {
+      console.log('Articulo seleccionado para editar:', articulo); // 👈🏻 Aquí
+      this.auxIdArticulo = articulo.id_articulo;
+  
+      this.validateFormArticulo.patchValue({
+        id_empresa: '1', // 👈🏻 O el valor real que tenga el artículo
+        cod_articulo: articulo.cod_articulo,
+        nomb_articulo: articulo.nomb_articulo,
+        unidad_medida: articulo.unidad_medida,
+        contenido_articulo: Number(articulo.contenido_articulo),
+        tipo_articulo: articulo.tipo_articulo
+      });
     }
   }
-
   handleOk(): void {
-
-    if (this.auxIdArea == 0) {
-      this.isOkLoading = true;
-      this.validateFormArea.controls.id_empresa.setValue('1');
-
-      this.api.consulta('areas', 'post', this.validateFormArea.value).subscribe((resp) => {
-
-
+    if (this.validateFormArticulo.invalid) {
+      this.validateFormArticulo.markAllAsTouched();
+      return;
+    }
+  
+    this.isOkLoading = true;
+  
+    const path = this.auxIdArticulo === 0 ? 'articulos' : `articulos/${this.auxIdArticulo}`;
+    const method = this.auxIdArticulo === 0 ? 'post' : 'put';
+  
+    this.api.consulta(path, method, this.validateFormArticulo.value).subscribe(
+      () => {
         this.isVisible = false;
         this.isOkLoading = false;
-        this.validateFormArea.reset();
-        this.ngOnInit();
-
-      });
-    } else {
-      this.isOkLoading = true;
-
-      this.api.consulta('areas/'+this.auxIdArea, 'put', this.validateFormArea.value).subscribe((resp) => {
-
-         this.isVisible = false;
-          this.isOkLoading = false;
-          this.validateFormArea.reset();
-          this.ngOnInit();
-
-
-      });
-    }
-
-
+        this.validateFormArticulo.reset();
+        this.ngOnInit(); 
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+        this.isOkLoading = false;
+      }
+    );
   }
 
   handleCancel(): void {
     this.isVisible = false;
   }
 
-  listarAreas(){
+  listarArticulos(){
     this.api.consulta('articulos', 'get').subscribe((resp) => {
 
       this.displayData = resp.data;
@@ -147,21 +156,20 @@ export class ArticulosComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah esta area?',
+      nzTitle: 'Desea eliminar este articulo?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,
-      nzOnOk: () => this.eliminarArea(id),
+      nzOnOk: () => this.eliminarArticulo(id),
       nzCancelText: 'No',
       nzOnCancel: () => console.log('Cancel')
     });
   }
 
-  eliminarArea(id: any) {
-    this.api.consulta('areas/'+id, 'delete').subscribe((resp) => {
-
-      this.ngOnInit();
-    });
+  eliminarArticulo(id: any) {
+   this.api.consulta(`articulos/${id}`, 'delete').subscribe(() => {
+    this.listarArticulos();
+  });
   }
 
 }

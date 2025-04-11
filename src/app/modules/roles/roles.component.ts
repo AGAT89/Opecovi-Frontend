@@ -187,7 +187,7 @@ export class RolesComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah este rol?',
+      nzTitle: 'Desea eliminar este rol?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,

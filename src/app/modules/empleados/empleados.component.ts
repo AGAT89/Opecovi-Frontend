@@ -277,7 +277,7 @@ export class EmpleadosComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah este empleado?',
+      nzTitle: 'Desea eliminar este empleado?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,

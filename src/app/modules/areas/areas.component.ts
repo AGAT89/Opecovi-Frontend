@@ -145,7 +145,7 @@ export class AreasComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah esta area?',
+      nzTitle: 'Desea eliminar esta area?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,

@@ -171,7 +171,7 @@ export class UsuariosComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah este usuario?',
+      nzTitle: 'Desea eliminar este usuario?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,

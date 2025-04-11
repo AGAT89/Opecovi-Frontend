@@ -211,7 +211,7 @@ export class PersonasComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah este persona?',
+      nzTitle: 'Desea eliminar este persona?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,

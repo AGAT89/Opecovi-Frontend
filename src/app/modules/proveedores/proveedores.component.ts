@@ -245,7 +245,7 @@ export class ProveedoresComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah este proveedor?',
+      nzTitle: 'Desea eliminar este proveedor?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,

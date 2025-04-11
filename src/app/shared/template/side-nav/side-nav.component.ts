@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ROUTES } from './side-nav-routes.config';
+// import { ROUTES } from './side-nav-routes.config';
 import { ThemeConstantService } from '../../services/theme-constant.service';
 import { SideNavInterface } from '../../interfaces/side-nav.type';
 

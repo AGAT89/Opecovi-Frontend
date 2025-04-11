@@ -151,7 +151,7 @@ export class RequerimientosComponent implements OnInit {
 
   showDeleteConfirm(id: any): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar ah este requerimiento?',
+      nzTitle: 'Desea eliminar este requerimiento?',
       nzOkText: 'Si',
       nzOkType: 'primary',
       nzOkDanger: true,

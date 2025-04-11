@@ -26,63 +26,70 @@
           </tr>
       </thead>
       <tbody>
-          <tr *ngFor="let item of productsListTable.data;  let i=index">
-              <td>{{i+1}}</td>
-              <td>{{item.cod_articulo}}</td>
-              <td>{{item.nomb_articulo}}</td>
-
-              <td>{{item.unidad_medida}}</td>
-
-
-              <td>{{item.tipo_articulo}}</td>
-              <td class="text-md-right" [width]="120" style="text-align: center!important;">
-                  <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Editar" (click)="showModal('editar', item)">
-                      <i nz-icon nzType="edit" theme="outline"></i>
-                  </a>
-                  <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Eliminar" (click)="showDeleteConfirm(item.id_area)">
-                      <i nz-icon nzType="delete" theme="outline"></i>
-                  </button>
-              </td>
-          </tr>
+        <tr *ngFor="let item of productsListTable.data; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.cod_articulo }}</td>
+          <td>{{ item.nomb_articulo }}</td>
+          <td>{{ item.unidad_medida }}</td>
+          <td>{{ item.contenido_articulo }}</td>
+          <td>{{ item.tipo_articulo }}</td>
+          <td class="text-md-right" [width]="120" style="text-align: center!important;">
+            <a class="m-r-5" nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Editar" (click)="showModal('editar', item)">
+              <i nz-icon nzType="edit" theme="outline"></i>
+            </a>
+            <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Eliminar" (click)="showDeleteConfirm(item.id_articulo)">
+              <i nz-icon nzType="delete" theme="outline"></i>
+            </button>
+          </td>
+        </tr>
       </tbody>
   </nz-table>
 </nz-card>
 
 <nz-modal
 [(nzVisible)]="isVisible"
-nzTitle="{{ auxIdArea == 0 ? 'Nueva Area' : 'Editar Area'}}"
+nzTitle="{{ auxIdArticulo == 0 ? 'Nueva Articulo' : 'Editar Articulo'}}"
 (nzOnCancel)="handleCancel()"
 (nzOnOk)="handleOk()"
 [nzOkLoading]="isOkLoading"
 nzWidth="50%"
 nzCancelText="Cancelar"
-nzOkText="{{ auxIdArea == 0 ? 'Guardar' : 'Actualizar'}}"
+nzOkText="{{ auxIdArticulo == 0 ? 'Guardar' : 'Actualizar'}}"
 >
   <ng-container *nzModalContent>
-
-
-    <form nz-form [formGroup]="validateFormArea"  style="max-width: 100%;">
-
-
+    <form nz-form [formGroup]="validateFormArticulo"  style="max-width: 100%;">
       <div nz-row>
         <div nz-col nzSpan="12" style="padding: 2%;">
           <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <input nz-input formControlName="cod_area" id="cod_area" placeholder="Codigo de area"/>
+            <input nz-input formControlName="cod_articulo" id="cod_articulo" placeholder="Codigo de articulo"/>
           </nz-form-control>
         </div>
         <div nz-col nzSpan="12" style="padding: 2%;">
           <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <input nz-input formControlName="nomb_area" id="apellido_paterno" placeholder="Nombre de area"/>
+            <input nz-input formControlName="nomb_articulo" id="nomb_articulo" placeholder="Nombre de articulo"/>
           </nz-form-control>
         </div>
       </div>
+
       <div nz-row>
         <div nz-col nzSpan="12" style="padding: 2%;">
           <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <input nz-input formControlName="centro_costos" id="apellido_materno" placeholder="Centro de costos"/>
+            <input nz-input formControlName="unidad_medida" id="unidad_medida" placeholder="Unidad de Medida"/>
           </nz-form-control>
         </div>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="contenido_articulo" id="contenido_articulo" placeholder="Contenido de articulo"/>
+          </nz-form-control>
+        </div>
+      </div>
 
+      <div nz-row>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <input nz-input formControlName="tipo_articulo" id="tipo_articulo" placeholder="Tipo de articulo"/>
+          </nz-form-control>
+        </div>
       </div>
 
     </form>
