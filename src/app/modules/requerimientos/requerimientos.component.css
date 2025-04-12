@@ -9,3 +9,18 @@
 .register-are {
   margin-bottom: 8px;
 }
+
+.card-pendiente {
+  border-left: 5px solid #faad14; /* amarillo */
+  background-color: #fffbe6;
+}
+
+.card-aprobado {
+  border-left: 5px solid #52c41a; /* verde */
+  background-color: #f6ffed;
+}
+
+.card-rechazado {
+  border-left: 5px solid #ff4d4f; /* rojo */
+  background-color: #fff1f0;
+}

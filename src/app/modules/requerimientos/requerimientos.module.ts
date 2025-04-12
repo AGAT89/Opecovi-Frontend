@@ -17,8 +17,6 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { ThemeConstantService } from 'src/app/shared/services/theme-constant.service';
 import { AppsService } from 'src/app/shared/services/apps.service';
 import { TableService } from 'src/app/shared/services/table.service';
-import { CreateComponent } from './create/create.component';
-import { EditComponent } from './edit/edit.component';
 
 const antdModule = [
   NzButtonModule,
@@ -35,8 +33,6 @@ const antdModule = [
 @NgModule({
   declarations: [
     RequerimientosComponent,
-    CreateComponent,
-    EditComponent
   ],
   imports: [
     SharedModule,
