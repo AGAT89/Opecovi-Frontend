@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
+
 import { ApiService } from 'src/app/shared/services/api.service';
 import { TableService } from 'src/app/shared/services/table.service';
 
@@ -12,6 +13,11 @@ interface DataItem {
   fecha: string;
   codigo_estado: string;
   empleado: string;
+  id_empresa?: string;
+  id_sucursal?: string;
+  id_empleado?: string;
+  id_empleado_aprobador?: string;
+  requerimientos_detalle?: { id_articulo: string; cant_solicitada: string }[];
 }
 
 @Component({
@@ -21,49 +27,38 @@ interface DataItem {
 })
 export class RequerimientosComponent implements OnInit {
 
-  selectedCategory: string;
-  selectedStatus: string;
-  searchInput: any;
-  displayData = [];
-  auxIdRequerimiento : number = 0;
-  sucursales: any[]=[];
-  empleados: any[]=[];
-  articulos: any[]=[];
-  estadosDisponibles: any[] = []; 
-  productsList = []
+  // UI state
   isVisible = false;
   isOkLoading = false;
 
-  orderColumn = [
-    {
-        title: '#',
-        compare: (a: DataItem, b: DataItem) => a.id_requerimiento - b.id_requerimiento,
-    },
-    {
-        title: 'Nro. requerimiento',
-        compare: (a: DataItem, b: DataItem) => a.nro_requerimiento.localeCompare(b.nro_requerimiento)
-    },
-    {
-        title: 'Sucursal',
-        compare: (a: DataItem, b: DataItem) => a.sucursal.localeCompare(b.sucursal)
-    },
-    {
-        title: 'Empleado solicitante',
-        compare: (a: DataItem, b: DataItem) => a.empleado.localeCompare(b.empleado)
-    },
-    {
-        title: 'Fecha creacion',
-        compare: (a: DataItem, b: DataItem) => a.fecha.localeCompare(b.fecha)
-    },
-    {
-        title: 'Estados',
-        compare: (a: DataItem, b: DataItem) => a.codigo_estado.localeCompare(b.codigo_estado)
-    },
-    {
-        title: 'Acciones'
-    }
-  ]
+  // Filters and search
+  selectedCategory = '';
+  selectedStatus = '';
+  searchInput = '';
 
+  // Data
+  displayData: DataItem[] = [];
+  productsList: DataItem[] = [];
+  sucursales: any[] = [];
+  empleados: any[] = [];
+  articulos: any[] = [];
+  estadosDisponibles: any[] = [];
+
+  // Modal helper
+  auxIdRequerimiento = 0;
+
+  // Table column configuration
+  orderColumn = [
+    { title: '#', compare: (a: DataItem, b: DataItem) => a.id_requerimiento - b.id_requerimiento },
+    { title: 'Nro. requerimiento', compare: (a: DataItem, b: DataItem) => a.nro_requerimiento.localeCompare(b.nro_requerimiento) },
+    { title: 'Sucursal', compare: (a: DataItem, b: DataItem) => a.sucursal.localeCompare(b.sucursal) },
+    { title: 'Empleado solicitante', compare: (a: DataItem, b: DataItem) => a.empleado.localeCompare(b.empleado) },
+    { title: 'Fecha creacion', compare: (a: DataItem, b: DataItem) => a.fecha.localeCompare(b.fecha) },
+    { title: 'Estados', compare: (a: DataItem, b: DataItem) => a.codigo_estado.localeCompare(b.codigo_estado) },
+    { title: 'Acciones' }
+  ];
+
+  // Formulario principal
   validateFormReque: FormGroup<{
     id_requerimiento: FormControl<string>;
     nro_requerimiento: FormControl<string>;
@@ -74,23 +69,27 @@ export class RequerimientosComponent implements OnInit {
     id_estados: FormControl<number>;
     detalle: FormControl<any[]>;
     cant_solicitada: FormControl<string>;
-    id_articulo: FormControl<string>; 
+    id_articulo: FormControl<string>;
   }>;
 
-  constructor(private tableSvc : TableService, private fb: NonNullableFormBuilder, private api: ApiService, private modal: NzModalService, private router: Router) {
-    this.displayData = this.productsList;
-
+  constructor(
+    private tableSvc: TableService,
+    private fb: NonNullableFormBuilder,
+    private api: ApiService,
+    private modal: NzModalService,
+    private router: Router
+  ) {
     this.validateFormReque = this.fb.group({
-      id_requerimiento: ['', [Validators.required,]],
-      nro_requerimiento: ['', [Validators.required,]],
-      id_empresa: ['', [Validators.required,]],
-      id_sucursal: ['', [Validators.required]],
-      id_empleado: ['', [Validators.required]],
-      id_empleado_aprobador: ['', [Validators.required]],
-      id_estados: [0, [Validators.required]],
-      cant_solicitada:['', [Validators.required]],
-      id_articulo:['', [Validators.required]],
-      detalle:[]
+      id_requerimiento: ['', Validators.required],
+      nro_requerimiento: ['', Validators.required],
+      id_empresa: ['', Validators.required],
+      id_sucursal: ['', Validators.required],
+      id_empleado: ['', Validators.required],
+      id_empleado_aprobador: ['', Validators.required],
+      id_estados: [0, Validators.required],
+      cant_solicitada: ['', Validators.required],
+      id_articulo: ['', Validators.required],
+      detalle: []
     });
   }
 
@@ -102,56 +101,62 @@ export class RequerimientosComponent implements OnInit {
     this.listarEstados();
   }
 
+  // ================= UI ACTIONS =================
+
   search(): void {
-    const data = this.productsList
-    this.displayData = this.tableSvc.search(this.searchInput, data )
+    this.displayData = this.tableSvc.search(this.searchInput, this.productsList);
   }
 
-  showModal(tipo: string, item? : any): void {
-    if (tipo == 'nuevo') {
-      this.isVisible = true;
-      this.auxIdRequerimiento = 0;
-      this.validateFormReque.reset(); 
-    } else {
-      this.auxIdRequerimiento = item.id_requerimiento;
-      this.validateFormReque.controls.nro_requerimiento.setValue(item.nro_requerimiento);
-      this.validateFormReque.controls.id_empresa.setValue(item.id_empresa);
-      this.validateFormReque.controls.id_sucursal.setValue(item.id_sucursal);
-      this.validateFormReque.controls.id_empleado.setValue(item.id_empleado);
+  showModal(tipo: 'nuevo' | 'editar', item?: DataItem): void {
+    this.isVisible = true;
+    this.auxIdRequerimiento = tipo === 'nuevo' ? 0 : item?.id_requerimiento || 0;
+
+    if (tipo === 'nuevo') {
+      this.validateFormReque.reset();
+    } else if (item) {
+      this.validateFormReque.patchValue({
+        nro_requerimiento: item.nro_requerimiento,
+        id_empresa: item.id_empresa || '',
+        id_sucursal: item.id_sucursal || '',
+        id_empleado: item.id_empleado || '',
+        id_empleado_aprobador: item.id_empleado_aprobador || ''
+      });
 
       const detalle = item.requerimientos_detalle?.[0];
       if (detalle) {
-        this.validateFormReque.controls.id_articulo.setValue(detalle.id_articulo);
-        this.validateFormReque.controls.cant_solicitada.setValue(detalle.cant_solicitada);
+        this.validateFormReque.patchValue({
+          id_articulo: detalle.id_articulo,
+          cant_solicitada: detalle.cant_solicitada
+        });
       }
-
-      this.isVisible = true;
     }
   }
 
   handleOk(): void {
     this.isOkLoading = true;
 
-    this.validateFormReque.patchValue({
+    const formValue = this.validateFormReque.value;
+    const payload = {
+      ...formValue,
       id_empresa: '1',
       id_requerimiento: '1',
       id_empleado_aprobador: '1',
       id_estados: 2,
       detalle: [{
-        id_articulo: this.validateFormReque.controls.id_articulo.value,
-        cant_solicitada: this.validateFormReque.controls.cant_solicitada.value
+        id_articulo: formValue.id_articulo,
+        cant_solicitada: formValue.cant_solicitada
       }]
-    });
+    };
 
-    if (this.auxIdRequerimiento === 0) {
-      this.api.consulta('requerimientos', 'post', this.validateFormReque.value).subscribe(() => {
-        this.finalizarModal();
-      });
-    } else {
-      this.api.consulta(`requerimientos/${this.auxIdRequerimiento}`, 'put', this.validateFormReque.value).subscribe(() => {
-        this.finalizarModal();
-      });
-    }
+    const request$ = this.auxIdRequerimiento === 0
+      ? this.api.consulta('requerimientos', 'post', payload)
+      : this.api.consulta(`requerimientos/${this.auxIdRequerimiento}`, 'put', payload);
+
+    request$.subscribe(() => this.finalizarModal());
+  }
+
+  handleCancel(): void {
+    this.isVisible = false;
   }
 
   finalizarModal(): void {
@@ -160,85 +165,102 @@ export class RequerimientosComponent implements OnInit {
     this.ngOnInit();
   }
 
-  handleCancel(): void {
-    this.isVisible = false;
-  }
+  // ================ CRUD =================
 
-  listarRequerimientos(){
-    this.api.consulta('requerimientos', 'get').subscribe((resp) => {
-      this.displayData = resp.data;
-      this.productsList =  resp.data;
+  listarRequerimientos(): void {
+    this.api.consulta('requerimientos', 'get').subscribe(resp => {
+      this.displayData = this.productsList = resp.data;
     });
   }
 
-  listarSucursales(){
-    this.api.consulta('sucursales', 'get').subscribe((resp) => {
+  listarSucursales(): void {
+    this.api.consulta('sucursales', 'get').subscribe(resp => {
       this.sucursales = resp.data;
     });
   }
 
-  listarEmpleados(){
-    this.api.consulta('empleados', 'get').subscribe((resp) => {
+  listarEmpleados(): void {
+    this.api.consulta('empleados', 'get').subscribe(resp => {
       this.empleados = resp.data;
     });
   }
 
-  listarArticulos() {
+  listarArticulos(): void {
     this.api.consulta('articulos', 'get').subscribe(resp => {
       this.articulos = resp.data;
     });
   }
-  listarEstados() {
+
+  listarEstados(): void {
     this.api.consulta('estados', 'get').subscribe(resp => {
       this.estadosDisponibles = resp.data;
     });
   }
-  
-  onEstadoSeleccionado(item: any, nuevoEstadoId: number): void {
+
+  onEstadoSeleccionado(item: DataItem, nuevoEstadoId: string): void {
+    const parsedEstadoId = parseInt(nuevoEstadoId, 10);
+
+    if (isNaN(parsedEstadoId)) {
+      this.modal.error({
+        nzTitle: 'Error al actualizar',
+        nzContent: 'No se seleccionó un estado válido.',
+      });
+      return;
+    }
+
     const payload = {
-      id_estados: nuevoEstadoId
+      id_empresa: item.id_empresa,
+      id_sucursal: item.id_sucursal,
+      id_empleado: item.id_empleado,
+      id_empleado_aprobador: item.id_empleado_aprobador,
+      nro_requerimiento: item.nro_requerimiento,
+      id_estados: parsedEstadoId,
+      usuario_modificacion: 'admin'
     };
-  
-    this.api.consulta(`requerimientos/${item.id_requerimiento}`, 'put', payload)
-      .subscribe(() => {
+
+    this.api.consulta(`requerimientos/${item.id_requerimiento}`, 'put', payload).subscribe({
+      next: () => {
         this.modal.success({
-          nzTitle: 'Estado actualizado',
-          nzContent: `El requerimiento ${item.nro_requerimiento} ha sido actualizado al estado seleccionado.`,
+          nzTitle: 'Actualizado correctamente',
+          nzContent: 'El estado del requerimiento fue actualizado.',
         });
         this.listarRequerimientos();
-      }, () => {
+      },
+      error: () => {
         this.modal.error({
           nzTitle: 'Error al actualizar',
-          nzContent: `No se pudo actualizar el estado del requerimiento ${item.nro_requerimiento}.`,
+          nzContent: 'Ocurrió un error al actualizar el requerimiento.',
         });
-      });
+      }
+    });
   }
-  
+  getNombreEstado(idEstado: number): string {
+    const estado = this.estadosDisponibles.find(e => e.id_estados === idEstado);
+    return estado?.nomb_estados?.toLowerCase() || '';
+  }
 
-  showDeleteConfirm(id: any): void {
+  showDeleteConfirm(id: number): void {
     this.modal.confirm({
-      nzTitle: 'Desea eliminar este requerimiento?',
-      nzOkText: 'Si',
+      nzTitle: '¿Desea eliminar este requerimiento?',
+      nzOkText: 'Sí',
       nzOkType: 'primary',
       nzOkDanger: true,
       nzOnOk: () => this.eliminarRequerimiento(id),
-      nzCancelText: 'No',
-      nzOnCancel: () => console.log('Cancel')
+      nzCancelText: 'No'
     });
   }
 
-  eliminarRequerimiento(id: any) {
-    this.api.consulta('requerimientos/'+id, 'delete').subscribe((resp) => {
+  eliminarRequerimiento(id: number): void {
+    this.api.consulta(`requerimientos/${id}`, 'delete').subscribe(() => {
       this.ngOnInit();
     });
   }
 
-  editarRequerimiento(param: any): void {
-    this.router.navigate(['/requerimientos/editar', param]);
+  editarRequerimiento(id: number): void {
+    this.router.navigate(['/requerimientos/editar', id]);
   }
 
-  verRequerimiento(param: any): void {
-    this.router.navigate(['/requerimientos-recibidos/ver', param]);
+  verRequerimiento(id: number): void {
+    this.router.navigate(['/requerimientos-recibidos/ver', id]);
   }
-  
 }

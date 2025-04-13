@@ -28,19 +28,17 @@ export class SideNavComponent{
         this.usuario = JSON.parse(jsonString);
 
         this.usuario.rol.permisos.forEach(element => {
-          console.log(element.modulo);
-          if (element.es_activo == 1) {
+          if (element.es_activo == 1 && element.modulo) {
             let item: SideNavInterface = {
-              path: element.modulo.path.toString(),
-              title: element.modulo.nomb_modulo.toString(),
+              path: element.modulo.path?.toString() || '',
+              title: element.modulo.nomb_modulo?.toString() || '',
               iconType: 'nzIcon',
-              icon: element.modulo.icon,
+              icon: element.modulo.icon || 'question-circle',
               iconTheme: 'outline',
               submenu: []
             };
             this.auxMenu.push(item);
           }
-
         });
 
          this.menuItems = this.auxMenu;//ROUTES.filter(menuItem => menuItem);

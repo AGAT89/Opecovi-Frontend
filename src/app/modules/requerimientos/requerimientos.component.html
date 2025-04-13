@@ -34,11 +34,21 @@
           <td>{{ item.sucursal.nomb_sucursal }} - {{ item.sucursal.direccion }}</td>
           <td>{{ item.empleado.persona.nombres }} - {{ item.empleado.persona.apellido_paterno }}</td>
           <td>{{ item.fecha_creacion }}</td>
-          <td>{{ item.estado?.nomb_estados }}</td>
+          <!-- <td>{{ item.estado?.nomb_estados }}</td> -->
           <td>
-            <select [ngModel]="item.estado_id" (ngModelChange)="onEstadoSeleccionado(item, $event)">
-              <option *ngFor="let estado of estadosDisponibles" [value]="estado.id">
-                {{ estado.nomb_estados }}
+            <select
+              class="form-select estado-select"
+              [ngModel]="item.estado?.id_estados"
+              (ngModelChange)="onEstadoSeleccionado(item, $event)"
+              [ngClass]="{
+                'estado-emitido': getNombreEstado(item.estado?.id_estados) === 'emitido',
+                'estado-recibido': getNombreEstado(item.estado?.id_estados) === 'recibido',
+                'estado-por-comprar': getNombreEstado(item.estado?.id_estados) === 'por comprar',
+                'estado-atendido': getNombreEstado(item.estado?.id_estados) === 'atendido'
+              }"
+            >
+              <option *ngFor="let estado of estadosDisponibles" [value]="estado.id_estados">
+                {{ estado.nomb_estados | titlecase }}
               </option>
             </select>
           </td>
