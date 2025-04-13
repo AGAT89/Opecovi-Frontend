@@ -234,6 +234,7 @@ export class RequerimientosComponent implements OnInit {
       }
     });
   }
+  
   getNombreEstado(idEstado: number): string {
     const estado = this.estadosDisponibles.find(e => e.id_estados === idEstado);
     return estado?.nomb_estados?.toLowerCase() || '';

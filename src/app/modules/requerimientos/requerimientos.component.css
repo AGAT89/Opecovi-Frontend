@@ -49,3 +49,50 @@
   filter: brightness(1.03);
   cursor: pointer;
 }
+
+/* Botones */
+.btn-action {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-action:hover {
+  background-color: #1890ff;
+  transform: scale(1.05);
+}
+
+/* Filas de la tabla */
+.table-row:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+/* Modal */
+.nz-modal-content {
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nz-form-control input, .nz-form-control select {
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-start; /* Alinea los botones a la izquierda en pantallas grandes */
+  gap: 10px; /* Espacio entre los botones */
+  flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas más pequeñas */
+}
+
+@media (max-width: 767px) {
+  .action-buttons {
+    justify-content: center; /* Alinea los botones al centro en pantallas pequeñas */
+  }
+
+  .action-buttons button {
+    margin-bottom: 8px; /* Espacio entre los botones cuando están en filas en pantallas pequeñas */
+  }
+}

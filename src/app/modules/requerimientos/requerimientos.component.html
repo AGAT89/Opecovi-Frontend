@@ -1,163 +1,129 @@
 <nz-card>
+  <!-- Filtro y botón de acción -->
   <div class="row m-b-30">
-      <div class="col-lg-8">
-          <div class="d-md-flex">
-              <div class="m-b-10 m-r-20">
-                  <nz-input-group [nzPrefix]="prefixTemplate">
-                      <input type="text" nz-input placeholder="Buscar..." [(ngModel)]="searchInput" (ngModelChange)="search()">
-                  </nz-input-group>
-                  <ng-template #prefixTemplate>
-                      <i nz-icon nzType="search" class="opacity-05"></i>
-                  </ng-template>
-              </div>
-          </div>
+    <div class="col-lg-8">
+      <div class="d-md-flex">
+        <div class="m-b-10 m-r-20">
+          <nz-input-group [nzPrefix]="prefixTemplate">
+            <input type="text" nz-input placeholder="Buscar..." [(ngModel)]="searchInput" (ngModelChange)="search()">
+          </nz-input-group>
+          <ng-template #prefixTemplate>
+            <i nz-icon nzType="search" class="opacity-05"></i>
+          </ng-template>
+        </div>
       </div>
-      <div class="col-lg-4 text-right">
-        <!-- Botón para agregar una nueva persona -->
-        <button nz-button nzType="primary" (click)="showModal('nuevo')">
-          <i nz-icon nzType="plus-circle" theme="outline"></i>
-          <span>Nuevo Requerimiento</span>
-        </button>
-      </div>
+    </div>
+    <div class="col-lg-4 text-right">
+      <button nz-button nzType="primary" (click)="showModal('nuevo')" class="btn-action">
+        <i nz-icon nzType="plus-circle" theme="outline"></i>
+        <span>Nuevo Requerimiento</span>
+      </button>
+    </div>
   </div>
 
-  <nz-table #productsListTable [nzData]="displayData">
-      <thead>
-          <tr>
-              <th *ngFor="let column of orderColumn" [nzSortFn]="column.compare">{{ column.title }}</th>
-          </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of productsListTable.data; let i = index;">
-          <td>{{ i + 1 }}</td>
-          <td>{{ item.nro_requerimiento }}</td>
-          <td>{{ item.sucursal.nomb_sucursal }} - {{ item.sucursal.direccion }}</td>
-          <td>{{ item.empleado.persona.nombres }} - {{ item.empleado.persona.apellido_paterno }}</td>
-          <td>{{ item.fecha_creacion }}</td>
-          <!-- <td>{{ item.estado?.nomb_estados }}</td> -->
-          <td>
-            <select
-              class="form-select estado-select"
-              [ngModel]="item.estado?.id_estados"
-              (ngModelChange)="onEstadoSeleccionado(item, $event)"
-              [ngClass]="{
-                'estado-emitido': getNombreEstado(item.estado?.id_estados) === 'emitido',
-                'estado-recibido': getNombreEstado(item.estado?.id_estados) === 'recibido',
-                'estado-por-comprar': getNombreEstado(item.estado?.id_estados) === 'por comprar',
-                'estado-atendido': getNombreEstado(item.estado?.id_estados) === 'atendido'
-              }"
-            >
-              <option *ngFor="let estado of estadosDisponibles" [value]="estado.id_estados">
-                {{ estado.nomb_estados | titlecase }}
-              </option>
-            </select>
-          </td>
-          <td class="text-md-right" [width]="160">
-            <button
-              nz-button
-              nzType="default"
-              nzShape="circle"
-              nz-tooltip
-              nzTooltipTitle="Editar"
-              (click)="showModal('editar', item)"
-              class="m-r-5"
-            >
+  <!-- Tabla de productos -->
+  <nz-table #productsListTable [nzData]="displayData" [nzBordered]="true">
+    <thead>
+      <tr>
+        <th *ngFor="let column of orderColumn" [nzSortFn]="column.compare" [nzWidth]="column.width">{{ column.title }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of productsListTable.data; let i = index;" class="table-row">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.nro_requerimiento }}</td>
+        <td>{{ item.sucursal.nomb_sucursal }} - {{ item.sucursal.direccion }}</td>
+        <td>{{ item.empleado.persona.nombres }} - {{ item.empleado.persona.apellido_paterno }}</td>
+        <td>{{ item.fecha_creacion }}</td>
+        <td>
+          <select
+            class="form-select estado-select"
+            [ngModel]="item.estado?.id_estados"
+            (ngModelChange)="onEstadoSeleccionado(item, $event)"
+            [ngClass]="{
+              'estado-emitido': getNombreEstado(item.estado?.id_estados) === 'emitido',
+              'estado-recibido': getNombreEstado(item.estado?.id_estados) === 'recibido',
+              'estado-por-comprar': getNombreEstado(item.estado?.id_estados) === 'por comprar',
+              'estado-atendido': getNombreEstado(item.estado?.id_estados) === 'atendido'
+            }">
+            <option *ngFor="let estado of estadosDisponibles" [value]="estado.id_estados">
+              {{ estado.nomb_estados | titlecase }}
+            </option>
+          </select>
+        </td>
+        <td class="text-md-right" [width]="200">
+          <div class="action-buttons">
+            <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Editar" (click)="showModal('editar', item)" class="m-r-2">
               <i nz-icon nzType="edit" theme="outline"></i>
             </button>
-      
-            <button
-              nz-button
-              nzType="default"
-              nzShape="circle"
-              nz-tooltip
-              nzTooltipTitle="Eliminar"
-              (click)="showDeleteConfirm(item.id_requerimiento)"
-              class="m-r-5"
-            >
+            <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Eliminar" (click)="showDeleteConfirm(item.id_requerimiento)" class="m-r-2">
               <i nz-icon nzType="delete" theme="outline"></i>
             </button>
-      
-            <button
-              nz-button
-              nzType="default"
-              nzShape="circle"
-              nz-tooltip
-              nzTooltipTitle="Ver"
-              (click)="verRequerimiento(item.id_requerimiento)"
-            >
+            <button nz-button nzType="default" nzShape="circle" nz-tooltip nzTooltipTitle="Ver" (click)="verRequerimiento(item.id_requerimiento)">
               <i nz-icon nzType="eye" theme="outline"></i>
             </button>
-          </td>
-        </tr>
-      </tbody>
+          </div>
+        </td>
+      </tr>
+    </tbody>
   </nz-table>
 </nz-card>
 
+<!-- Modal para crear o editar requerimiento -->
 <nz-modal
-[(nzVisible)]="isVisible"
-nzTitle="{{ auxIdRequerimiento == 0 ? 'Nuevo Requerimiento' : 'Editar Requerimiento'}}"
-(nzOnCancel)="handleCancel()"
-(nzOnOk)="handleOk()"
-[nzOkLoading]="isOkLoading"
-nzWidth="50%"
-nzCancelText="Cancelar"
-nzOkText="{{ auxIdRequerimiento == 0 ? 'Guardar' : 'Actualizar'}}"
->
+  [(nzVisible)]="isVisible"
+  nzTitle="{{ auxIdRequerimiento == 0 ? 'Nuevo Requerimiento' : 'Editar Requerimiento'}}"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+  nzWidth="50%"
+  nzCancelText="Cancelar"
+  nzOkText="{{ auxIdRequerimiento == 0 ? 'Guardar' : 'Actualizar'}}">
+
   <ng-container *nzModalContent>
-    <form nz-form [formGroup]="validateFormReque"  style="max-width: 100%;">
+    <form nz-form [formGroup]="validateFormReque" style="max-width: 100%;">
+      <!-- Número de requerimiento y sucursal -->
       <div nz-row>
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="El número de requerimiento es obligatorio">
             <input nz-input formControlName="nro_requerimiento" id="nro_requerimiento" placeholder="Número de requerimiento"/>
           </nz-form-control>
         </div>
-         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <nz-select
-              id="id_sucursal"
-              formControlName="id_sucursal"
-              nzPlaceHolder="Sucursales"
-            >
-            <nz-option [nzValue]="sucursal.id_sucursal" [nzLabel]="sucursal.nomb_sucursal+' '
-            +sucursal.direccion" *ngFor="let sucursal of sucursales"></nz-option>
+        <div nz-col nzSpan="12" style="padding: 2%;">
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <nz-select id="id_sucursal" formControlName="id_sucursal" nzPlaceHolder="Sucursales">
+              <nz-option [nzValue]="sucursal.id_sucursal" [nzLabel]="sucursal.nomb_sucursal + ' ' + sucursal.direccion" *ngFor="let sucursal of sucursales"></nz-option>
             </nz-select>
           </nz-form-control>
         </div>
       </div>
+
+      <!-- Empleado y cantidad solicitada -->
       <div nz-row>
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <nz-select *ngIf="empleados.length > 0"
-              id="id_empleado"
-              formControlName="id_empleado"
-              nzPlaceHolder="Empleados">
-              <nz-option
-                *ngFor="let empleado of empleados"
-                [nzValue]="empleado.id_empleado"
-                [nzLabel]="empleado.persona.nombres + ' ' + empleado.persona.apellido_paterno + ' ' + empleado.persona.apellido_materno">
-              </nz-option>
+          <nz-form-control [nzSm]="24" [nzXs]="24">
+            <nz-select *ngIf="empleados.length > 0" id="id_empleado" formControlName="id_empleado" nzPlaceHolder="Empleados">
+              <nz-option *ngFor="let empleado of empleados" [nzValue]="empleado.id_empleado" [nzLabel]="empleado.persona.nombres + ' ' + empleado.persona.apellido_paterno + ' ' + empleado.persona.apellido_materno"></nz-option>
             </nz-select>
           </nz-form-control>
         </div>
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24">
             <input nz-input formControlName="cant_solicitada" id="cant_solicitada" placeholder="Cantidad Solicitada"/>
           </nz-form-control>
         </div>
       </div>
+
+      <!-- Artículo -->
       <div nz-row>
-      
         <div nz-col nzSpan="12" style="padding: 2%;">
-          <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+          <nz-form-control [nzSm]="24" [nzXs]="24">
             <nz-select formControlName="id_articulo" nzShowSearch nzPlaceHolder="Seleccione artículo">
               <nz-option *ngFor="let art of articulos" [nzValue]="art.id_articulo" [nzLabel]="art.nomb_articulo"></nz-option>
             </nz-select>
           </nz-form-control>
         </div>
       </div>
-
     </form>
   </ng-container>
-
-
 </nz-modal>
