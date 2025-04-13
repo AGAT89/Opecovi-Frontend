@@ -35,12 +35,17 @@ export class Login1Component {
         if (resp.statusCode == 200) {
           this.credenciales = false;
 
-          console.log(resp.data);
+
 
           // Convierte el objeto JSON a una cadena de texto
           const jsonString = JSON.stringify(resp.data);
           // Guarda la cadena de texto en localStorage
+          localStorage.removeItem('id_empleado');
+          localStorage.removeItem('id_area');
           localStorage.setItem('usuario', jsonString);
+          localStorage.setItem('id_empleado', resp.data.id_empleado.toString());
+          localStorage.setItem('id_area', resp.data.empleado.id_area.toString());
+
           let ruta: string = resp.data.rol.permisos[0].modulo.path;
           this.router.navigate([ruta]);
         } else {

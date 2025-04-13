@@ -28,8 +28,8 @@
       <tbody>
           <tr *ngFor="let item of productsListTable.data;  let i=index">
               <td>{{i+1}}</td>
-              <td>{{item.empleado.persona.nombres}}</td>
-              <td>{{item.empleado.persona.apellido_paterno}} {{item.empleado.persona.apellido_materno}}</td>
+              <td>{{item.empleado?.persona?.nombres}}</td>
+              <td>{{item.empleado?.persona?.apellido_paterno}} {{item.empleado?.persona?.apellido_materno}}</td>
 
               <td>{{item.usuario}}</td>
               <td>{{item.rol.nomb_rol}}</td>

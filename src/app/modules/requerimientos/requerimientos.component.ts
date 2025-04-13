@@ -162,14 +162,33 @@ export class RequerimientosComponent implements OnInit {
   finalizarModal(): void {
     this.isVisible = false;
     this.isOkLoading = false;
-    this.ngOnInit();
+    this.listarRequerimientos();
   }
 
   // ================ CRUD =================
-
+  
   listarRequerimientos(): void {
     this.api.consulta('requerimientos', 'get').subscribe(resp => {
-      this.displayData = this.productsList = resp.data;
+      const loggedEmpleadoId = Number(localStorage.getItem('id_empleado')) || 0;
+      const loggedArea = Number(localStorage.getItem('id_area')) || 0;
+  
+      const data = resp.data || [];
+      let filteredData: any[] = [];
+  
+      switch (loggedArea) {
+        case 1:
+          filteredData = data;
+          break;
+        case 3:
+          console.log(data);
+          filteredData = data.filter((item: any) => item.id_empleado === loggedEmpleadoId);
+          break;
+        default:
+          filteredData = data.filter((item: any) => item.id_empleado === loggedEmpleadoId);
+          break;
+      }
+  
+      this.displayData = this.productsList = filteredData.sort((a, b) => b.id_requerimiento - a.id_requerimiento);
     });
   }
 
@@ -234,7 +253,7 @@ export class RequerimientosComponent implements OnInit {
       }
     });
   }
-  
+
   getNombreEstado(idEstado: number): string {
     const estado = this.estadosDisponibles.find(e => e.id_estados === idEstado);
     return estado?.nomb_estados?.toLowerCase() || '';
