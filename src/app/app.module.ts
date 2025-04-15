@@ -27,6 +27,8 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { AppsService } from './shared/services/apps.service';
 import { TableService } from './shared/services/table.service';
+import { ChatBoxComponent } from './modules/chat-box/chat-box.component';
+
 
 
 
@@ -37,6 +39,7 @@ registerLocaleData(en);
         AppComponent,
         CommonLayoutComponent,
         FullLayoutComponent,
+        ChatBoxComponent,
         // RolesComponent,
         // UsuariosComponent,
 

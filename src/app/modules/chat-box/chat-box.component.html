@@ -1,0 +1,26 @@
+<div class="chat-wrapper" *ngIf="isLoggedIn">
+  <div class="chat-header" (click)="toggleChat()">
+    <h3>Soporte en línea</h3>
+    <span class="toggle-icon">{{ isChatVisible ? '▼' : '▲' }}</span>
+  </div>
+
+  <div class="chat-container" *ngIf="isChatVisible">
+    <div class="chat-messages" id="chatScroll">
+      <div *ngFor="let msg of messages" 
+           class="chat-message" 
+           [ngClass]="{ 'user-message': msg.isUser, 'bot-message': !msg.isUser }">
+        <span>{{ msg.mensaje }}</span>
+      </div>
+    </div>
+    
+    <div class="chat-input">
+      <input
+        [(ngModel)]="message"
+        type="text"
+        placeholder="Escribe tu mensaje..."
+        (keydown.enter)="sendMessage()"
+      />
+      <button (click)="sendMessage()">📨</button>
+    </div>
+  </div>
+</div>
