@@ -11,54 +11,92 @@ export class ChatBoxComponent implements OnInit {
   message: string = '';
   messages: any[] = [];
   isLoggedIn = false;
-  isChatVisible = false; 
-  constructor(private api: ApiService, private cd: ChangeDetectorRef) {}
+  isChatVisible = false;
+  private previousLoginStatus = false;
+
+  constructor(
+    private api: ApiService,
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    this.checkLoginStatus(); 
+    this.checkLoginStatus();
     setInterval(() => this.checkLoginStatus(), 1000);
   }
-  
+
   checkLoginStatus(): void {
     const usuario = localStorage.getItem('usuario');
-    const wasLoggedIn = this.isLoggedIn;
-    this.isLoggedIn = !!usuario;
-    
-    if (this.isLoggedIn !== wasLoggedIn) {
-      this.cd.detectChanges(); 
+    const currentlyLoggedIn = !!usuario;
+
+    // Detecta cambio de estado de login
+    if (currentlyLoggedIn !== this.previousLoginStatus) {
+      this.isLoggedIn = currentlyLoggedIn;
+      this.previousLoginStatus = currentlyLoggedIn;
+
+      // Si se logueó, se reinicia el chat
+      if (this.isLoggedIn) {
+        this.resetChat();
+      }
+
+      this.cd.detectChanges();
     }
   }
 
-  toggleChat() {
+  toggleChat(): void {
     this.isChatVisible = !this.isChatVisible;
+  
     if (this.isChatVisible) {
       this.getMessages();
+    } else {
+      const usuario = JSON.parse(localStorage.getItem('usuario')!);
+      this.api.consulta('chat/delete', 'post', { id_usuario: usuario?.id_usuario }).subscribe(() => {
+        this.messages = [];
+      });
     }
   }
-  
-  sendMessage() {
-    if (this.message.trim() === '') return;
-    
-    const body = { mensaje: this.message };
-  
+
+  sendMessage(): void {
+    const trimmedMessage = this.message.trim();
+    if (!trimmedMessage) return;
+
+    const usuario = JSON.parse(localStorage.getItem('usuario')!);
+    const body = {
+      mensaje: trimmedMessage,
+      id_usuario: usuario?.id_usuario || null
+    };
+
     this.api.consulta('chat/send', 'post', body).subscribe((res) => {
-      
-      if (res.user_message && res.auto_response && res.auto_response.mensaje) {
-        this.messages.push({ mensaje: this.message, isUser: true });
-        this.message = '';
+      if (res.user_message && res.auto_response?.mensaje) {
+        this.messages.push({ mensaje: trimmedMessage, isUser: true });
         this.messages.push({ mensaje: res.auto_response.mensaje, isUser: false });
-        console.log('Mensajes en el array:', this.messages);
+        this.message = '';
       } else {
         console.error('Error en la respuesta del servidor', res);
       }
     });
   }
+
+
+
   
-  getMessages() {
-    this.api.consulta('chat/messages', 'get').subscribe((res) => {
-      if (res.statusCode == 200) {
-        this.messages = res.data;
-      }
-    });
+
+  getMessages(): void {
+    const usuario = JSON.parse(localStorage.getItem('usuario')!);
+    if (usuario) {
+      this.api.consulta('chat/messages', 'get', { id_usuario: usuario.id_usuario }).subscribe((res) => {
+        if (res.statusCode === 200) {
+          this.messages = res.data;
+        }
+      });
+    }
+  }
+
+  private resetChat(): void {
+    this.messages = [];
+    this.addBotMessage('Hola, ¿qué producto deseas buscar?');
+  }
+
+  private addBotMessage(text: string): void {
+    this.messages.push({ mensaje: text, isUser: false });
   }
 }
