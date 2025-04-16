@@ -9,6 +9,7 @@ interface DataItem {
   cod_articulo: string;
   nomb_articulo: string;
   unidad_medida: string;
+  stock: number;
   stock_minimo: number;
   stock_maximo: number;
   contenido_articulo: string;
@@ -46,7 +47,7 @@ export class ArticulosComponent implements OnInit {
     },
     {
       title: 'Stock',
-      compare: (a: DataItem, b: DataItem) =>  a.stock_minimo - b.stock_minimo,
+      compare: (a: DataItem, b: DataItem) =>  a.stock - b.stock,
     },
     {
       title: 'Contenido articulo',
@@ -73,6 +74,7 @@ export class ArticulosComponent implements OnInit {
     cod_articulo: FormControl<string>;
     nomb_articulo: FormControl<string>;
     unidad_medida: FormControl<string>;
+    stock: FormControl<number>;
     stock_minimo: FormControl<number>;
     stock_maximo: FormControl<number>;
     contenido_articulo: FormControl<number>;
@@ -92,6 +94,7 @@ export class ArticulosComponent implements OnInit {
       cod_articulo: ['', [Validators.required]],
       nomb_articulo: ['', [Validators.required]],
       unidad_medida: ['', [Validators.required]],
+      stock: [0, [Validators.required]],
       stock_minimo: [0, [Validators.required]],
       stock_maximo: [0, [Validators.required]],
       contenido_articulo: [0, [Validators.required]],
@@ -113,9 +116,9 @@ export class ArticulosComponent implements OnInit {
 
 
 
-  showModal(tipo: string, articulo? : any): void {
-    console.log(articulo);
-    if (tipo == 'nuevo') {
+  showModal(tipo: string, articulo?: any): void {
+    if (tipo === 'nuevo') {
+      this.validateFormArticulo.reset();
       this.isVisible = true;
       this.auxIdArticulo = 0;
     } else {
@@ -124,72 +127,51 @@ export class ArticulosComponent implements OnInit {
       this.validateFormArticulo.controls.cod_articulo.setValue(articulo.cod_articulo);
       this.validateFormArticulo.controls.nomb_articulo.setValue(articulo.nomb_articulo);
       this.validateFormArticulo.controls.unidad_medida.setValue(articulo.unidad_medida);
-      this.validateFormArticulo.controls.contenido_articulo.setValue(articulo.unidad_medida);
-      this.validateFormArticulo.controls.tipo_articulo.setValue(articulo.unidad_medida);
+      this.validateFormArticulo.controls.stock.setValue(articulo.stock);
+      this.validateFormArticulo.controls.stock_minimo.setValue(articulo.stock_minimo);
+      this.validateFormArticulo.controls.stock_maximo.setValue(articulo.stock_maximo);
+      this.validateFormArticulo.controls.contenido_articulo.setValue(articulo.contenido_articulo);
+      this.validateFormArticulo.controls.tipo_articulo.setValue(articulo.tipo_articulo);
+      this.validateFormArticulo.controls.peso_articulo.setValue(articulo.peso_articulo);
+      this.validateFormArticulo.controls.volumen_articulo.setValue(articulo.volumen_articulo);
+      this.validateFormArticulo.controls.cod_barra_articulo.setValue(articulo.cod_barra_articulo);
       console.log(this.validateFormArticulo.value);
       this.isVisible = true;
     }
   }
 
-  /*
-
-  showModal(tipo: string, articulo?: DataItem): void {
-    console.log('Abriendo modal. Tipo:', tipo, 'Articulo recibido:', articulo);
-    this.isVisible = true;
+  handleOk(): void {
+    const isNew = this.auxIdArticulo === 0;
+    this.isOkLoading = true;
   
-    if (tipo === 'nuevo') {
-      console.log('Se abrió modal para crear un nuevo artículo');
-      this.auxIdArticulo = 0;
-      this.validateFormArticulo.reset();
-    } else if (articulo) {
-      console.log('Artículo seleccionado para editar:', articulo);
-      this.auxIdArticulo = articulo.id_articulo;
-  
-      const patchData = {
-        id_empresa: '1', // O el valor real que tenga el artículo
-        cod_articulo: articulo.cod_articulo,
-        nomb_articulo: articulo.nomb_articulo,
-        unidad_medida: articulo.unidad_medida,
-        contenido_articulo: Number(articulo.contenido_articulo),
-        tipo_articulo: articulo.tipo_articulo
-      };
-  
-      console.log('Aplicando patch al formulario con:', patchData);
-      this.validateFormArticulo.patchValue(patchData);
+    if (isNew) {
+      this.validateFormArticulo.controls.id_empresa.setValue('1');
     }
-  }*/
   
-    handleOk(): void {
-      const isNew = this.auxIdArticulo === 0;
-      this.isOkLoading = true;
+    const method = isNew ? 'post' : 'put';
+    const endpoint = isNew
+      ? 'articulos'
+      : `articulos/${this.auxIdArticulo}`;  
+  
+    const formData = this.validateFormArticulo.value;
+  
+    this.api.consulta(endpoint, method, formData).subscribe({
+      next: (resp) => {
+        this.resetFormAndCloseModal();
+      },
+      error: (err) => {
+        console.error('Error al guardar artículo:', err);
+        this.isOkLoading = false;
+      },
+    });
+  }
     
-      if (isNew) {
-        this.validateFormArticulo.controls.id_empresa.setValue('1');
-      }
-    
-      const method = isNew ? 'post' : 'put';
-      const endpoint = isNew
-        ? 'articulos'
-        : `articulos/${this.validateFormArticulo.value.cod_articulo}`;
-      const formData = this.validateFormArticulo.value;
-    
-      this.api.consulta(endpoint, method, formData).subscribe({
-        next: (resp) => {
-          this.resetFormAndCloseModal();
-        },
-        error: (err) => {
-          console.error('Error al guardar artículo:', err);
-          this.isOkLoading = false;
-        },
-      });
-    }
-    
-    private resetFormAndCloseModal(): void {
-      this.isVisible = false;
-      this.isOkLoading = false;
-      this.validateFormArticulo.reset();
-      this.ngOnInit(); // Refresca datos
-    }
+  private resetFormAndCloseModal(): void {
+    this.isVisible = false;
+    this.isOkLoading = false;
+    this.validateFormArticulo.reset();
+    this.ngOnInit(); // Refresca datos
+  }
 
   handleCancel(): void {
     this.isVisible = false;

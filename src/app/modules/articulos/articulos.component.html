@@ -31,7 +31,7 @@
           <td>{{ item.cod_articulo }}</td>
           <td>{{ item.nomb_articulo }}</td>
           <td>{{ item.unidad_medida }}</td>
-          <td>{{ item.stock_minimo }}</td>
+          <td>{{ item.stock }}</td>
           <td>{{ item.contenido_articulo }}</td>
           <td>{{ item.tipo_articulo }}</td>
           <td class="text-md-right" [width]="120" style="text-align: center!important;">
@@ -80,7 +80,7 @@ nzOkText="{{ auxIdArticulo == 0 ? 'Guardar' : 'Actualizar'}}"
         </div>
         <div nz-col nzSpan="12" style="padding: 2%;">
           <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
-            <input nz-input formControlName="stock_minimo" id="stock_minimo" placeholder="Stock"/>
+            <input nz-input type="number" formControlName="stock" id="stock" placeholder="Stock"/>
           </nz-form-control>
         </div>
       </div>
