@@ -59,7 +59,7 @@ export class CotizacionesComponent {
       const fechaAprobacion = new Date();
       const fechaAprobacionFormateada = fechaAprobacion.toISOString().slice(0, 19).replace('T', ' ');  // Elimina milisegundos y 'T'
 
-    // Nuevos campos:
+
       formData.append('fecha_aprobacion', fechaAprobacionFormateada);
       formData.append('imp_neto', '100'); 
       formData.append('imp_base_isc', '10'); 
@@ -69,7 +69,7 @@ export class CotizacionesComponent {
       formData.append('imp_igv', '18'); 
       formData.append('imp_cobrar', '200');  
   
-      // Llamada a la API
+
       this.api.consulta('cotizaciones', 'post', formData).subscribe({
         next: (res) => {
           this.uploadedFiles.push(this.selectedFile!);
