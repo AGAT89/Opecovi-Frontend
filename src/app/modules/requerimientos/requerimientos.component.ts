@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 
@@ -23,10 +28,9 @@ interface DataItem {
 @Component({
   selector: 'app-requerimientos',
   templateUrl: './requerimientos.component.html',
-  styleUrls: ['./requerimientos.component.css']
+  styleUrls: ['./requerimientos.component.css'],
 })
 export class RequerimientosComponent implements OnInit {
-
   // UI state
   isVisible = false;
   isOkLoading = false;
@@ -49,13 +53,36 @@ export class RequerimientosComponent implements OnInit {
 
   // Table column configuration
   orderColumn = [
-    { title: '#', compare: (a: DataItem, b: DataItem) => a.id_requerimiento - b.id_requerimiento },
-    { title: 'Nro. requerimiento', compare: (a: DataItem, b: DataItem) => a.nro_requerimiento.localeCompare(b.nro_requerimiento) },
-    { title: 'Sucursal', compare: (a: DataItem, b: DataItem) => a.sucursal.localeCompare(b.sucursal) },
-    { title: 'Empleado solicitante', compare: (a: DataItem, b: DataItem) => a.empleado.localeCompare(b.empleado) },
-    { title: 'Fecha creacion', compare: (a: DataItem, b: DataItem) => a.fecha.localeCompare(b.fecha) },
-    { title: 'Estados', compare: (a: DataItem, b: DataItem) => a.codigo_estado.localeCompare(b.codigo_estado) },
-    { title: 'Acciones' }
+    {
+      title: '#',
+      compare: (a: DataItem, b: DataItem) =>
+        a.id_requerimiento - b.id_requerimiento,
+    },
+    {
+      title: 'Nro. requerimiento',
+      compare: (a: DataItem, b: DataItem) =>
+        a.nro_requerimiento.localeCompare(b.nro_requerimiento),
+    },
+    {
+      title: 'Sucursal',
+      compare: (a: DataItem, b: DataItem) =>
+        a.sucursal.localeCompare(b.sucursal),
+    },
+    {
+      title: 'Empleado solicitante',
+      compare: (a: DataItem, b: DataItem) =>
+        a.empleado.localeCompare(b.empleado),
+    },
+    {
+      title: 'Fecha creacion',
+      compare: (a: DataItem, b: DataItem) => a.fecha.localeCompare(b.fecha),
+    },
+    {
+      title: 'Estados',
+      compare: (a: DataItem, b: DataItem) =>
+        a.codigo_estado.localeCompare(b.codigo_estado),
+    },
+    { title: 'Acciones' },
   ];
 
   // Formulario principal
@@ -89,7 +116,7 @@ export class RequerimientosComponent implements OnInit {
       id_estados: [0, Validators.required],
       cant_solicitada: ['', Validators.required],
       id_articulo: ['', Validators.required],
-      detalle: []
+      detalle: [],
     });
   }
 
@@ -104,12 +131,16 @@ export class RequerimientosComponent implements OnInit {
   // ================= UI ACTIONS =================
 
   search(): void {
-    this.displayData = this.tableSvc.search(this.searchInput, this.productsList);
+    this.displayData = this.tableSvc.search(
+      this.searchInput,
+      this.productsList
+    );
   }
 
   showModal(tipo: 'nuevo' | 'editar', item?: DataItem): void {
     this.isVisible = true;
-    this.auxIdRequerimiento = tipo === 'nuevo' ? 0 : item?.id_requerimiento || 0;
+    this.auxIdRequerimiento =
+      tipo === 'nuevo' ? 0 : item?.id_requerimiento || 0;
 
     if (tipo === 'nuevo') {
       this.validateFormReque.reset();
@@ -119,14 +150,14 @@ export class RequerimientosComponent implements OnInit {
         id_empresa: item.id_empresa || '',
         id_sucursal: item.id_sucursal || '',
         id_empleado: item.id_empleado || '',
-        id_empleado_aprobador: item.id_empleado_aprobador || ''
+        id_empleado_aprobador: item.id_empleado_aprobador || '',
       });
 
       const detalle = item.requerimientos_detalle?.[0];
       if (detalle) {
         this.validateFormReque.patchValue({
           id_articulo: detalle.id_articulo,
-          cant_solicitada: detalle.cant_solicitada
+          cant_solicitada: detalle.cant_solicitada,
         });
       }
     }
@@ -136,21 +167,29 @@ export class RequerimientosComponent implements OnInit {
     this.isOkLoading = true;
 
     const formValue = this.validateFormReque.value;
+    console.log(this.validateFormReque);
     const payload = {
       ...formValue,
       id_empresa: '1',
       id_requerimiento: '1',
       id_empleado_aprobador: '1',
       id_estados: 2,
-      detalle: [{
-        id_articulo: formValue.id_articulo,
-        cant_solicitada: formValue.cant_solicitada
-      }]
+      detalle: [
+        {
+          id_articulo: formValue.id_articulo,
+          cant_solicitada: formValue.cant_solicitada,
+        },
+      ],
     };
 
-    const request$ = this.auxIdRequerimiento === 0
-      ? this.api.consulta('requerimientos', 'post', payload)
-      : this.api.consulta(`requerimientos/${this.auxIdRequerimiento}`, 'put', payload);
+    const request$ =
+      this.auxIdRequerimiento === 0
+        ? this.api.consulta('requerimientos', 'post', payload)
+        : this.api.consulta(
+            `requerimientos/${this.auxIdRequerimiento}`,
+            'put',
+            payload
+          );
 
     request$.subscribe(() => this.finalizarModal());
   }
@@ -166,52 +205,59 @@ export class RequerimientosComponent implements OnInit {
   }
 
   // ================ CRUD =================
-  
+
   listarRequerimientos(): void {
-    this.api.consulta('requerimientos', 'get').subscribe(resp => {
+    this.api.consulta('requerimientos', 'get').subscribe((resp) => {
       const loggedEmpleadoId = Number(localStorage.getItem('id_empleado')) || 0;
       const loggedArea = Number(localStorage.getItem('id_area')) || 0;
-  
       const data = resp.data || [];
       let filteredData: any[] = [];
-  
+
       switch (loggedArea) {
         case 1:
           filteredData = data;
           break;
         case 3:
-          console.log(data);
-          filteredData = data.filter((item: any) => item.id_empleado === loggedEmpleadoId);
+          filteredData = data;
           break;
         default:
-          filteredData = data.filter((item: any) => item.id_empleado === loggedEmpleadoId);
+          filteredData = data.filter(
+            (item: any) => item.id_empleado === loggedEmpleadoId
+          );
           break;
       }
-  
-      this.displayData = this.productsList = filteredData.sort((a, b) => b.id_requerimiento - a.id_requerimiento);
+
+      this.displayData = this.productsList = filteredData.sort(
+        (a, b) => b.id_requerimiento - a.id_requerimiento
+      );
     });
   }
 
   listarSucursales(): void {
-    this.api.consulta('sucursales', 'get').subscribe(resp => {
+    this.api.consulta('sucursales', 'get').subscribe((resp) => {
       this.sucursales = resp.data;
     });
   }
 
   listarEmpleados(): void {
-    this.api.consulta('empleados', 'get').subscribe(resp => {
-      this.empleados = resp.data;
+    this.api.consulta('empleados', 'get').subscribe((resp) => {
+      let filteredData: any[] = [];
+      const loggedEmpleadoId = Number(localStorage.getItem('id_empleado')) || 0;
+      filteredData = resp.data.filter(
+        (item: any) => item.id_empleado === loggedEmpleadoId
+      );
+      this.empleados = filteredData;
     });
   }
 
   listarArticulos(): void {
-    this.api.consulta('articulos', 'get').subscribe(resp => {
+    this.api.consulta('articulos', 'get').subscribe((resp) => {
       this.articulos = resp.data;
     });
   }
 
   listarEstados(): void {
-    this.api.consulta('estados', 'get').subscribe(resp => {
+    this.api.consulta('estados', 'get').subscribe((resp) => {
       this.estadosDisponibles = resp.data;
     });
   }
@@ -234,28 +280,32 @@ export class RequerimientosComponent implements OnInit {
       id_empleado_aprobador: item.id_empleado_aprobador,
       nro_requerimiento: item.nro_requerimiento,
       id_estados: parsedEstadoId,
-      usuario_modificacion: 'admin'
+      usuario_modificacion: 'admin',
     };
 
-    this.api.consulta(`requerimientos/${item.id_requerimiento}`, 'put', payload).subscribe({
-      next: () => {
-        this.modal.success({
-          nzTitle: 'Actualizado correctamente',
-          nzContent: 'El estado del requerimiento fue actualizado.',
-        });
-        this.listarRequerimientos();
-      },
-      error: () => {
-        this.modal.error({
-          nzTitle: 'Error al actualizar',
-          nzContent: 'Ocurrió un error al actualizar el requerimiento.',
-        });
-      }
-    });
+    this.api
+      .consulta(`requerimientos/${item.id_requerimiento}`, 'put', payload)
+      .subscribe({
+        next: () => {
+          this.modal.success({
+            nzTitle: 'Actualizado correctamente',
+            nzContent: 'El estado del requerimiento fue actualizado.',
+          });
+          this.listarRequerimientos();
+        },
+        error: () => {
+          this.modal.error({
+            nzTitle: 'Error al actualizar',
+            nzContent: 'Ocurrió un error al actualizar el requerimiento.',
+          });
+        },
+      });
   }
 
   getNombreEstado(idEstado: number): string {
-    const estado = this.estadosDisponibles.find(e => e.id_estados === idEstado);
+    const estado = this.estadosDisponibles.find(
+      (e) => e.id_estados === idEstado
+    );
     return estado?.nomb_estados?.toLowerCase() || '';
   }
 
@@ -266,7 +316,7 @@ export class RequerimientosComponent implements OnInit {
       nzOkType: 'primary',
       nzOkDanger: true,
       nzOnOk: () => this.eliminarRequerimiento(id),
-      nzCancelText: 'No'
+      nzCancelText: 'No',
     });
   }
 
