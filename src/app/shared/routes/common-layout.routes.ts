@@ -47,5 +47,9 @@ export const CommonLayout_ROUTES: Routes = [
       path: 'articulos',
       loadChildren: () => import('../../modules/articulos/articulos.module').then(m => m.ArticulosModule),
     },
+    {
+      path: 'cotizaciones',
+      loadChildren: () => import('../../modules/cotizaciones/cotizaciones.module').then(m => m.CotizacionesModule),
+    },
 
 ];

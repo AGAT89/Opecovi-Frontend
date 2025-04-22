@@ -1,0 +1,53 @@
+<div class="upload-container">
+    <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data" class="upload-form">
+      <h2 class="form-title">Subir Cotización</h2>
+  
+      <div class="form-group">
+        <label for="requirementNumber">Número de cotización</label>
+        <input
+          id="requirementNumber"
+          type="text"
+          class="form-control"
+          formControlName="requirementNumber"
+          placeholder="Ej: COT-2025-0001"
+        />
+      </div>
+  
+      <div class="form-group">
+        <label for="pdfFile">Seleccionar Archivo PDF</label>
+        <input
+          id="pdfFile"
+          type="file"
+          accept="application/pdf"
+          class="form-control-file"
+          (change)="onFileSelected($event)"
+        />
+  
+        <!-- 👇 Fragmento para mostrar archivo seleccionado -->
+        <div *ngIf="selectedFile" class="text-muted mt-2">
+          Archivo seleccionado: {{ selectedFile.name }} ({{ (selectedFile.size / (1024 * 1024) | number:'1.2-2') }} MB)
+        </div>
+      </div>
+  
+      <button type="submit" class="btn-submit" [disabled]="!uploadForm.valid || !selectedFile">
+        <i class="fa fa-upload"></i> Subir Archivo
+      </button>
+  
+      <div *ngIf="uploadedFiles.length > 0" class="uploaded-list">
+        <h3 class="uploaded-title">Archivos Subidos</h3>
+        <ul class="file-list">
+          <li *ngFor="let file of uploadedFiles" class="file-item">
+            <i class="fa fa-file-pdf-o file-icon" aria-hidden="true"></i>
+            <span class="file-name">{{ file.name }}</span>
+  
+            <div class="file-actions">
+              <button class="btn-view" (click)="viewFile(file)">Ver</button>
+              <button class="btn-delete" (click)="removeFile(file)">Eliminar</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+      
+    </form>
+  </div>
+  
