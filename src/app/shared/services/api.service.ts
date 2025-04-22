@@ -15,7 +15,7 @@ export class ApiService {
   private headers = new HttpHeaders({
     'Accept' : 'application/json',
     'Content-Type' : 'application/json',
-    'Authorization' : 'Bearer 6b8d5a6ac07eee789dca621abb56558562121723ced05a89ffc03d1dbf686c5b'
+    'Authorization' : 'Bearer cc35774c0f2ac7dc26348889039ebdf296a893a4097c6bfbb767aaac8f6cd33c'
   });
 
   constructor(private http: HttpClient) { }
