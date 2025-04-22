@@ -27,6 +27,8 @@
     "chart.js": "^2.9.4",
     "date-fns": "^2.16.1",
     "jquery": "^3.5.1",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "ng-chartjs": "^0.2.1",
     "ng-zorro-antd": "^14.1.1",
     "ngx-highlightjs": "^4.1.3",

@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NonNullableFormBuilder, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  Validators,
+} from '@angular/forms';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ApiService } from 'src/app/shared/services/api.service';
 import { TableService } from 'src/app/shared/services/table.service';
@@ -10,17 +17,16 @@ interface DataItem {
   apellido_paterno: string;
   tipo_persona: string;
   documento_identidad: string;
-  telefono:  string;
-  giro_negocio:  string;
+  telefono: string;
+  giro_negocio: string;
 }
 
 @Component({
   selector: 'app-proveedores',
   templateUrl: './proveedores.component.html',
-  styleUrls: ['./proveedores.component.css']
+  styleUrls: ['./proveedores.component.css'],
 })
 export class ProveedoresComponent implements OnInit {
-
   selectedCategory: string;
   selectedStatus: string;
   searchInput: any;
@@ -28,39 +34,44 @@ export class ProveedoresComponent implements OnInit {
 
   orderColumn = [
     {
-        title: '#',
-        compare: (a: DataItem, b: DataItem) => a.id - b.id,
+      title: '#',
+      compare: (a: DataItem, b: DataItem) => a.id - b.id,
     },
     {
-        title: 'Nombres',
-        compare: (a: DataItem, b: DataItem) => a.nombres.localeCompare(b.nombres)
+      title: 'Nombres',
+      compare: (a: DataItem, b: DataItem) => a.nombres.localeCompare(b.nombres),
     },
     {
-        title: 'Apellidos',
-        compare: (a: DataItem, b: DataItem) => a.apellido_paterno.localeCompare(b.apellido_paterno)
+      title: 'Apellidos',
+      compare: (a: DataItem, b: DataItem) =>
+        a.apellido_paterno.localeCompare(b.apellido_paterno),
     },
     {
-        title: 'Tipo de Persona',
-        compare: (a: DataItem, b: DataItem) => a.tipo_persona.localeCompare(b.tipo_persona)
+      title: 'Tipo de Persona',
+      compare: (a: DataItem, b: DataItem) =>
+        a.tipo_persona.localeCompare(b.tipo_persona),
     },
     {
-        title: 'Documento',
-        compare: (a: DataItem, b: DataItem) => a.documento_identidad.localeCompare(b.documento_identidad)
+      title: 'Documento',
+      compare: (a: DataItem, b: DataItem) =>
+        a.documento_identidad.localeCompare(b.documento_identidad),
     },
     {
-        title: 'Telefono',
-        compare: (a: DataItem, b: DataItem) => a.telefono.localeCompare(b.telefono)
+      title: 'Telefono',
+      compare: (a: DataItem, b: DataItem) =>
+        a.telefono.localeCompare(b.telefono),
     },
     {
-        title: 'Giro de negocio',
-        compare: (a: DataItem, b: DataItem) => a.giro_negocio.localeCompare(b.giro_negocio)
+      title: 'Giro de negocio',
+      compare: (a: DataItem, b: DataItem) =>
+        a.giro_negocio.localeCompare(b.giro_negocio),
     },
     {
-        title: 'Acciones'
-    }
-  ]
+      title: 'Acciones',
+    },
+  ];
 
-  productsList = []
+  productsList = [];
 
   isVisible = false;
   isOkLoading = false;
@@ -84,17 +95,21 @@ export class ProveedoresComponent implements OnInit {
     id_empresa: FormControl<string>;
     id_persona: FormControl<string>;
     giro_negocio: FormControl<string>;
-
   }>;
 
-  auxIdProveedor : number = 0;
+  auxIdProveedor: number = 0;
 
-  constructor(private tableSvc : TableService, private fb: NonNullableFormBuilder, private api: ApiService, private modal: NzModalService) {
+  constructor(
+    private tableSvc: TableService,
+    private fb: NonNullableFormBuilder,
+    private api: ApiService,
+    private modal: NzModalService
+  ) {
     this.displayData = this.productsList;
 
     this.validateFormPerson = this.fb.group({
       id_empresa: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      tipo_persona: ['', [Validators.required,]],
+      tipo_persona: ['', [Validators.required]],
       tipo_documento: ['', [Validators.required]],
       documento_identidad: ['', [Validators.required]],
       apellido_paterno: ['', [Validators.required]],
@@ -128,104 +143,152 @@ export class ProveedoresComponent implements OnInit {
   }
 
   search(): void {
-    const data = this.productsList
-    this.displayData = this.tableSvc.search(this.searchInput, data )
+    const data = this.productsList;
+    this.displayData = this.tableSvc.search(this.searchInput, data);
   }
 
-
-
-  showModal(tipo: string, proveedor? : any): void {
+  showModal(tipo: string, proveedor?: any): void {
     if (tipo == 'nuevo') {
       this.isVisible = true;
       this.auxIdProveedor = 0;
     } else {
-
       this.auxIdProveedor = proveedor.id_proveedor;
 
-      this.validateFormPerson.controls.id_empresa.setValue(proveedor.persona.id_empresa);
-      this.validateFormPerson.controls.tipo_persona.setValue(proveedor.persona.tipo_persona);
-      this.validateFormPerson.controls.tipo_documento.setValue(proveedor.persona.tipo_documento);
-      this.validateFormPerson.controls.documento_identidad.setValue(proveedor.persona.documento_identidad);
-      this.validateFormPerson.controls.apellido_paterno.setValue(proveedor.persona.apellido_paterno);
-      this.validateFormPerson.controls.apellido_materno.setValue(proveedor.persona.apellido_materno);
-      this.validateFormPerson.controls.nombres.setValue(proveedor.persona.nombres);
-      this.validateFormPerson.controls.direccion.setValue(proveedor.persona.direccion);
-      this.validateFormPerson.controls.ubigeo.setValue(proveedor.persona.ubigeo);
-      this.validateFormPerson.controls.telefono.setValue(proveedor.persona.telefono);
-      this.validateFormPerson.controls.es_empleado.setValue(proveedor.persona.es_empleado);
-      this.validateFormPerson.controls.es_proveedor.setValue(proveedor.persona.es_proveedor);
+      this.validateFormPerson.controls.id_empresa.setValue(
+        proveedor.persona.id_empresa
+      );
+      this.validateFormPerson.controls.tipo_persona.setValue(
+        proveedor.persona.tipo_persona
+      );
+      this.validateFormPerson.controls.tipo_documento.setValue(
+        proveedor.persona.tipo_documento
+      );
+      this.validateFormPerson.controls.documento_identidad.setValue(
+        proveedor.persona.documento_identidad
+      );
+      this.validateFormPerson.controls.apellido_paterno.setValue(
+        proveedor.persona.apellido_paterno
+      );
+      this.validateFormPerson.controls.apellido_materno.setValue(
+        proveedor.persona.apellido_materno
+      );
+      this.validateFormPerson.controls.nombres.setValue(
+        proveedor.persona.nombres
+      );
+      this.validateFormPerson.controls.direccion.setValue(
+        proveedor.persona.direccion
+      );
+      this.validateFormPerson.controls.ubigeo.setValue(
+        proveedor.persona.ubigeo
+      );
+      this.validateFormPerson.controls.telefono.setValue(
+        proveedor.persona.telefono
+      );
+      this.validateFormPerson.controls.es_empleado.setValue(
+        proveedor.persona.es_empleado
+      );
+      this.validateFormPerson.controls.es_proveedor.setValue(
+        proveedor.persona.es_proveedor
+      );
 
-      this.validateFormProveedor.controls.id_empresa.setValue(proveedor.id_empresa);
-      this.validateFormProveedor.controls.id_persona.setValue(proveedor.id_persona);
-      this.validateFormProveedor.controls.giro_negocio.setValue(proveedor.giro_negocio);
+      this.validateFormProveedor.controls.id_empresa.setValue(
+        proveedor.id_empresa
+      );
+      this.validateFormProveedor.controls.id_persona.setValue(
+        proveedor.id_persona
+      );
+      this.validateFormProveedor.controls.giro_negocio.setValue(
+        proveedor.giro_negocio
+      );
 
       this.isVisible = true;
     }
   }
 
   handleOk(): void {
-
     if (this.auxIdProveedor == 0) {
       this.isOkLoading = true;
       this.validateFormProveedor.controls.id_empresa.setValue('1');
 
-      this.api.consulta('proveedores', 'post', this.validateFormProveedor.value).subscribe((resp) => {
-
-
-        this.isVisible = false;
-        this.isOkLoading = false;
-        this.validateFormPerson.reset();
-        this.validateFormProveedor.reset();
-        this.ngOnInit();
-
-      });
-    } else {
-      this.isOkLoading = true;
-
-      this.api.consulta('proveedores/'+this.auxIdProveedor, 'put', this.validateFormProveedor.value).subscribe((resp) => {
-
-         this.isVisible = false;
+      this.api
+        .consulta('proveedores', 'post', this.validateFormProveedor.value)
+        .subscribe((resp) => {
+          this.isVisible = false;
           this.isOkLoading = false;
           this.validateFormPerson.reset();
           this.validateFormProveedor.reset();
           this.ngOnInit();
+        });
+    } else {
+      this.isOkLoading = true;
 
-
-      });
+      this.api
+        .consulta(
+          'proveedores/' + this.auxIdProveedor,
+          'put',
+          this.validateFormProveedor.value
+        )
+        .subscribe((resp) => {
+          this.isVisible = false;
+          this.isOkLoading = false;
+          this.validateFormPerson.reset();
+          this.validateFormProveedor.reset();
+          this.ngOnInit();
+        });
     }
-
-
   }
 
   handleCancel(): void {
     this.isVisible = false;
   }
 
-  buscarNumeroDocumento(){
-    this.api.consulta('busca-peronsa-documento/'+this.validateFormPerson.controls.documento_identidad.value, 'get').subscribe((resp)=>{
-      console.log(resp);
-        this.validateFormPerson.controls.id_empresa.setValue(resp.data.id_empresa);
-        this.validateFormPerson.controls.tipo_persona.setValue(resp.data.tipo_persona);
-        this.validateFormPerson.controls.tipo_documento.setValue(resp.data.tipo_documento);
-        this.validateFormPerson.controls.apellido_paterno.setValue(resp.data.apellido_paterno);
-        this.validateFormPerson.controls.apellido_materno.setValue(resp.data.apellido_materno);
+  buscarNumeroDocumento() {
+    this.api
+      .consulta(
+        'busca-peronsa-documento/' +
+          this.validateFormPerson.controls.documento_identidad.value,
+        'get'
+      )
+      .subscribe((resp) => {
+        console.log(resp);
+        this.validateFormPerson.controls.id_empresa.setValue(
+          resp.data.id_empresa
+        );
+        this.validateFormPerson.controls.tipo_persona.setValue(
+          resp.data.tipo_persona
+        );
+        this.validateFormPerson.controls.tipo_documento.setValue(
+          resp.data.tipo_documento
+        );
+        this.validateFormPerson.controls.apellido_paterno.setValue(
+          resp.data.apellido_paterno
+        );
+        this.validateFormPerson.controls.apellido_materno.setValue(
+          resp.data.apellido_materno
+        );
         this.validateFormPerson.controls.nombres.setValue(resp.data.nombres);
         this.validateFormPerson.controls.ubigeo.setValue(resp.data.ubigeo);
         this.validateFormPerson.controls.telefono.setValue(resp.data.telefono);
-        this.validateFormPerson.controls.direccion.setValue(resp.data.direccion);
-        this.validateFormPerson.controls.es_empleado.setValue(resp.data.es_empleado);
-        this.validateFormPerson.controls.es_proveedor.setValue(resp.data.es_proveedor);
+        this.validateFormPerson.controls.direccion.setValue(
+          resp.data.direccion
+        );
+        this.validateFormPerson.controls.es_empleado.setValue(
+          resp.data.es_empleado
+        );
+        this.validateFormPerson.controls.es_proveedor.setValue(
+          resp.data.es_proveedor
+        );
 
-        this.validateFormProveedor.controls.id_persona.setValue(resp.data.id_persona);
-    });
-
+        this.validateFormProveedor.controls.id_persona.setValue(
+          resp.data.id_persona
+        );
+      });
   }
 
-  listarProveedores(){
+  listarProveedores() {
     this.api.consulta('proveedores', 'get').subscribe((resp) => {
-
       this.displayData = resp.data;
-      this.productsList =  resp.data;
+      this.productsList = resp.data;
     });
   }
 
@@ -240,7 +303,7 @@ export class ProveedoresComponent implements OnInit {
     { codigo: '008', nombre: 'Seguros' },
     { codigo: '009', nombre: 'Tecnología' },
     { codigo: '010', nombre: 'Telefonia' },
-    { codigo: '011', nombre: 'Uniformes' }
+    { codigo: '011', nombre: 'Uniformes' },
   ];
 
   showDeleteConfirm(id: any): void {
@@ -251,15 +314,49 @@ export class ProveedoresComponent implements OnInit {
       nzOkDanger: true,
       nzOnOk: () => this.eliminarProveedores(id),
       nzCancelText: 'No',
-      nzOnCancel: () => console.log('Cancel')
+      nzOnCancel: () => console.log('Cancel'),
     });
   }
 
   eliminarProveedores(id: any) {
-    this.api.consulta('proveedores/'+id, 'delete').subscribe((resp) => {
-
+    this.api.consulta('proveedores/' + id, 'delete').subscribe((resp) => {
       this.ngOnInit();
     });
   }
 
+  generatePDF(): void {
+    const doc = new jsPDF();
+
+    const headers = [
+      [
+        'ID',
+        'Nombres',
+        'Tipo de Persona',
+        'Documento',
+        'Teléfono',
+        'Giro de negocio',
+      ],
+    ];
+    console.log('displayData completo:', this.displayData);
+
+    const data = this.displayData.map((item: any) => [
+      item.id_proveedor,
+      item.persona.nombres,
+      item.persona.tipo_persona,
+      item.persona.documento_identidad,
+      item.persona.telefono,
+      item.giro_negocio,
+    ]);
+
+    // Mostrar en consola para verificar
+    console.log('Datos para PDF:', data);
+
+    autoTable(doc, {
+      head: headers,
+      body: data,
+    });
+    // window.open(doc.output('bloburl'));
+
+    doc.save('proveedores.pdf');
+  }
 }
